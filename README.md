@@ -17,3 +17,5 @@ Needs a username/botname, Oauth token, and channel you wish to connect to.
 Use responsably. 
 
 Let me know of bugs... I might be interested in fixing them... 
+
+the code is fugly as heck. I know. shhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
