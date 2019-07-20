@@ -1,4 +1,6 @@
 # WhosTalking
+Needs Python 2.7
+
 Twitch bot to keep track of who is actually talking.
 
 Based on the work of https://github.com/BadNidalee/ChatBot
