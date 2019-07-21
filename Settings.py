@@ -1,5 +1,9 @@
 import os
 import keyring
+# This is for windows... ... ming generalize later... 
+from keyrings.alt import Windows
+keyring.set_keyring(Windows.RegistryKeyring())
+
 fileName=os.getcwd()+"\\credentials.txt"
 service="Whostalking"
 

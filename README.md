@@ -1,7 +1,3 @@
-!! Warning
-
-It'll put the credentials file unencrypted on the same location as he bot... so... don't put the bot on your dropbox or any other non-private storage :) 
-
 # WhosTalking
 Needs Python 2.7
 
