@@ -20,4 +20,4 @@ Use responsably.
 
 Let me know of bugs... I might be interested in fixing them... 
 
-the code is fugly as heck. I know. shhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
+the code is fugly as heck. I know. shhhhhhh

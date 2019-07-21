@@ -60,8 +60,11 @@ class Application(Frame):
         self.toggle_btn.grid(column=1, row=4)
 
         # List box
-        self.ListChatters =Listbox(self, height=15, yscrollcommand=Scrollbar(self).set)
+        self.scrollbar = Scrollbar(self)
+        self.scrollbar.grid(column=3, row=6, sticky=N+S)
+        self.ListChatters =Listbox(self, height=15, yscrollcommand=self.scrollbar.set)
         self.ListChatters.grid(column=2, row=6, sticky=W+E+N+S)
+        self.scrollbar.config(command=self.ListChatters.yview)
 
     def addToList(self, user, message):
         if user and message:
