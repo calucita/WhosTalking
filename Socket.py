@@ -22,10 +22,8 @@ def recv_timeout(the_socket,timeout=.250):
         #make socket non blocking
         the_socket.setblocking(0)
 
-        #beginning time
         begin=time.time()
-        while 1:
-                #if you got some data, then break after timeout
+        while True:
                 if data:
                     break
         
@@ -33,11 +31,9 @@ def recv_timeout(the_socket,timeout=.250):
                 elif time.time()-begin > timeout:
                     break
         
-                #recv something
                 try:
                     data = the_socket.recv(1024)
                 except:
                     pass
-    
-        #join all parts to make final string
+                
         return data
