@@ -12,7 +12,10 @@ def openSocket(PASS, IDENT, CHANNEL):
         s.send("JOIN #" +  CHANNEL + "\r\n")
         return s
 	
-def sendMessage(s, message):
+def sendMessage(s, message="PONG :tmi.twitch.tv\r\n", CHANNEL=""):
+        if not CHANNEL:
+                s.send(message)
+                return
         messageTemp = "PRIVMSG #" + CHANNEL + " :" + message
         s.send(messageTemp + "\r\n")
         print("Sent: " + messageTemp)

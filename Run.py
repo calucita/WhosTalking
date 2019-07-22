@@ -15,7 +15,7 @@ def twitchBot():
             readbuffer = temp.pop()
             for line in temp:
                 if "PING" in line:
-                    sendMessage(app.socket, "PONG")
+                    sendMessage(app.socket)
                     break
                 user = getUser(line)
                 message = getMessage(line)

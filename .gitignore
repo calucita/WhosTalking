@@ -1,6 +1,2 @@
-
-Socket.pyc
-Settings.pyc
-Read.pyc
-Initialize.pyc
-GUI.pyc
+*.pyc
+*.exe
