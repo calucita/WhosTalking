@@ -8,6 +8,7 @@ from Settings import loadCredentials, saveCredentials
 class Application(Frame):
     connected = False
     logNames = False
+    saveFileBool = False
     socket = ''
     names = []
     
@@ -18,7 +19,6 @@ class Application(Frame):
         self.master.geometry('350x450')
         self.create_widgets()
         loadCredentials(self)
-        #tkFileDialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("txt files","*.txt"),("all files","*.*")))
         self.pack()
     
     def addToList(self, user, message):
@@ -75,12 +75,23 @@ class Application(Frame):
             self.toggle_btn.config(relief=SKN, text=txtDisconnect)
         self.onStop()
 
+    def searchFile(self):
+        if self.SaveEntry.get():
+            text = self.SaveEntry.get()
+        else:
+            text = "/"
+        newLoc = tkFileDialog.askopenfilename(initialdir = text, title = "Select file",filetypes = (("txt files","*.txt"),("all files","*.*")))
+        if newLoc:
+            self.SaveEntry.insert(0, newLoc)
+            
+## actual GUI :P 
     def create_widgets(self):
         self.createLabels()
         self.createEntries()
         self.createButtons()
         self.createToggle()
         self.createList()
+        self.createSave()
         self.setPossitions()
 
     def createLabels(self):
@@ -114,7 +125,16 @@ class Application(Frame):
         self.scrollbar = Scrollbar(self)
         self.ListChatters =Listbox(self, height=15, yscrollcommand=self.scrollbar.set)
         self.scrollbar.config(command=self.ListChatters.yview)
-
+        
+    def createSave(self):
+        self.SaveFrame =Frame(self)
+        self.SaveLabel =Label(self.SaveFrame, text=txtSave)
+        self.SaveCheck =Checkbutton(self.SaveFrame, variable=self.saveFileBool) 
+        self.SaveEntry =Entry(self, width=35)
+        self.SaveSearch=Button(self, width=1, text="...", command=self.searchFile)
+        self.SaveLabel.grid(column=1, row=1)
+        self.SaveCheck.grid(column=2, row=1)
+        
     def setPossitions(self):
         # Column 1
         self.NameLabel.grid(column=1, row=1, sticky=W)
@@ -123,6 +143,7 @@ class Application(Frame):
         self.toggle_btn.grid(column=1, row=4)
         self.ButtonFrame.grid(column=1, row=6)
         self.IgnoreLabel.grid(column=1, row=7)
+        self.SaveFrame.grid(column=1, row=8)
         
         # Column 2 
         self.NameEntry.grid(column=2, row=1, sticky=W)
@@ -132,6 +153,11 @@ class Application(Frame):
         self.ListLabel.grid(column=2, row=5)
         self.ListChatters.grid(column=2, row=6, sticky=W+E+N+S)
         self.IgnoreEntry.grid(column=2, row=7, sticky=W+S)
+        self.SaveEntry.grid(column=2, row=8)
 
         # Column 3
         self.scrollbar.grid(column=3, row=6, sticky=N+S)
+        self.SaveSearch.grid(column=3, row=8)
+
+        # Row 8 space
+        self.grid_rowconfigure(8, minsize=55)

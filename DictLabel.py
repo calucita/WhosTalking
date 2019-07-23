@@ -13,6 +13,7 @@ txtClear = "Clear"
 txtConnect = "Connect"
 txtDisconnect = "Disconnect"
 txtError = "Error"
+txtSave = "Save file"
 
 # tk helpers
 TXT = "text"
