@@ -1,3 +1,4 @@
+import os
 import tkFileDialog
 from DictLabel import *
 from Tkinter import *
@@ -5,10 +6,10 @@ from Socket import openSocket
 from Initialize import joinRoom
 from Settings import loadCredentials, saveCredentials
 
+
 class Application(Frame):
     connected = False
     logNames = False
-    saveFileBool = False
     socket = ''
     names = []
     
@@ -19,17 +20,30 @@ class Application(Frame):
         self.master.geometry('350x450')
         self.create_widgets()
         loadCredentials(self)
-        self.pack()
+        self.pack(side=LEFT, fill="both", expand=True)
     
     def addToList(self, user, message):
         if user and message:
             if not (user in self.names) and not (user in self.IgnoreEntry.get()):
                 self.ListChatters.insert(END, user + ": " + message)
                 self.names.append(user)
+                #if not ("ActiveChatters.txt" in self.SaveEntry.get()) and self.SaveCheck.get():
+                   # self.SaveEntry.insert(END, "\\ActiveChatters.txt")
+
+                if os.path.isfile(self.SaveEntry.get()) and self.saveFileVar.get():
+                    try:
+                        recordFile = open(fileName, 'a')
+                        recordFile.write(user)
+                        recordFile.close()
+                    except:
+                        pass
+                    
 
     def deleteList(self):
         self.ListChatters.delete(0,END)
         self.names = []
+        if os.path.isfile(self.SaveEntry.get()):
+            os.remove(self.SaveEntry.get())
 
     def onStart(self):
         if self.isConnected():
@@ -68,7 +82,7 @@ class Application(Frame):
 
     def toggle(self):
         if self.toggle_btn.config(TXT)[-1] == txtDisconnect:
-            self.toggle_btn.config(relief=RSD, text=txtConnd)
+            self.toggle_btn.config(relief=RSD, text=txtConnect)
             self.socket.close()
             self.isConnected(False)
         else:
@@ -123,13 +137,14 @@ class Application(Frame):
 
     def createList(self):
         self.scrollbar = Scrollbar(self)
-        self.ListChatters =Listbox(self, height=15, yscrollcommand=self.scrollbar.set)
+        self.ListChatters =Listbox(self, height=12, yscrollcommand=self.scrollbar.set, font=('Helvatica',12))
         self.scrollbar.config(command=self.ListChatters.yview)
         
     def createSave(self):
         self.SaveFrame =Frame(self)
         self.SaveLabel =Label(self.SaveFrame, text=txtSave)
-        self.SaveCheck =Checkbutton(self.SaveFrame, variable=self.saveFileBool) 
+        self.saveFileVar = IntVar()
+        self.SaveCheck =Checkbutton(self.SaveFrame, variable=self.saveFileVar) 
         self.SaveEntry =Entry(self, width=35)
         self.SaveSearch=Button(self, width=1, text="...", command=self.searchFile)
         self.SaveLabel.grid(column=1, row=1)
@@ -151,13 +166,14 @@ class Application(Frame):
         self.ChannelEntry.grid(column=2, row=3, sticky=W)
         self.ConnectLabel.grid(column=2, row=4)
         self.ListLabel.grid(column=2, row=5)
+
+        Grid.rowconfigure(self, 6, weight=1)
+        Grid.columnconfigure(self, 2, weight=1)
+        
         self.ListChatters.grid(column=2, row=6, sticky=W+E+N+S)
-        self.IgnoreEntry.grid(column=2, row=7, sticky=W+S)
-        self.SaveEntry.grid(column=2, row=8)
+        self.IgnoreEntry.grid(column=2, row=7, sticky=W+E)
+        self.SaveEntry.grid(column=2, row=8, sticky=W+E, pady=10)
 
         # Column 3
         self.scrollbar.grid(column=3, row=6, sticky=N+S)
         self.SaveSearch.grid(column=3, row=8)
-
-        # Row 8 space
-        self.grid_rowconfigure(8, minsize=55)
