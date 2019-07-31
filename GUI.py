@@ -4,7 +4,7 @@ from DictLabel import *
 from Tkinter import *
 from Socket import openSocket
 from Initialize import joinRoom
-from Settings import loadCredentials, saveCredentials
+from Settings import loadCredentials, saveCredentials, saveFileInKey
 
 
 class Application(Frame):
@@ -25,16 +25,24 @@ class Application(Frame):
     def addToList(self, user, message):
         if user and message:
             if not (user in self.names) and not (user in self.IgnoreEntry.get()):
-                self.ListChatters.insert(END, user + ": " + message)
+                self.ListChatters.insert(END, user + ":   " + message)
                 self.names.append(user)
-                #if not ("ActiveChatters.txt" in self.SaveEntry.get()) and self.SaveCheck.get():
-                   # self.SaveEntry.insert(END, "\\ActiveChatters.txt")
-
-                if os.path.isfile(self.SaveEntry.get()) and self.saveFileVar.get():
+                if self.saveFileVar.get():
+                    if len(self.names) == 1:
+                        try:
+                            os.remove(self.SaveEntry.get())
+                        except:
+                            pass
+                        saveFileInKey(self)
                     try:
-                        recordFile = open(fileName, 'a')
-                        recordFile.write(user)
-                        recordFile.close()
+                        if os.path.isfile(self.SaveEntry.get()):
+                            recordFile = open(self.SaveEntry.get(), 'a')
+                        elif self.SaveEntry.get():
+                            recordFile = open(self.SaveEntry.get(), 'w')
+                            
+                        if recordFile:
+                            recordFile.write(user+"\n")
+                            recordFile.close()
                     except:
                         pass
                     
@@ -94,8 +102,9 @@ class Application(Frame):
             text = self.SaveEntry.get()
         else:
             text = "/"
-        newLoc = tkFileDialog.askopenfilename(initialdir = text, title = "Select file",filetypes = (("txt files","*.txt"),("all files","*.*")))
+        newLoc = tkFileDialog.asksaveasfilename(initialdir = text, title = "Select file",filetypes = (("txt files","*.txt"),("all files","*.*")))
         if newLoc:
+            self.SaveEntry.delete(0, END)
             self.SaveEntry.insert(0, newLoc)
             
 ## actual GUI :P 
