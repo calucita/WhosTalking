@@ -1,17 +1,17 @@
-import os
 import tkFileDialog
 from DictLabel import *
 from Tkinter import *
 from Socket import openSocket
 from Initialize import joinRoom
-from Settings import loadCredentials, saveCredentials, saveFileInKey
+from Settings import *
+from UserList import UserList
 
 
 class Application(Frame):
     connected = False
     logNames = False
     socket = ''
-    names = []
+    userList = UserList()
     
     def __init__(self, master=None):
         Frame.__init__(self, master)
@@ -22,37 +22,6 @@ class Application(Frame):
         loadCredentials(self)
         self.pack(side=LEFT, fill="both", expand=True)
     
-    def addToList(self, user, message):
-        if user and message:
-            if not (user in self.names) and not (user in self.IgnoreEntry.get()):
-                self.ListChatters.insert(END, user + ":   " + message)
-                self.names.append(user)
-                if self.saveFileVar.get():
-                    if len(self.names) == 1:
-                        try:
-                            os.remove(self.SaveEntry.get())
-                        except:
-                            pass
-                        saveFileInKey(self)
-                    try:
-                        if os.path.isfile(self.SaveEntry.get()):
-                            recordFile = open(self.SaveEntry.get(), 'a')
-                        elif self.SaveEntry.get():
-                            recordFile = open(self.SaveEntry.get(), 'w')
-                            
-                        if recordFile:
-                            recordFile.write(user+"\n")
-                            recordFile.close()
-                    except:
-                        pass
-                    
-
-    def deleteList(self):
-        self.ListChatters.delete(0,END)
-        self.names = []
-        if os.path.isfile(self.SaveEntry.get()):
-            os.remove(self.SaveEntry.get())
-
     def onStart(self):
         if self.isConnected():
             self.logNames = True
@@ -63,6 +32,15 @@ class Application(Frame):
         self.logNames = False
         self.Start.config(relief=RSD)
         self.Stop.config(relief=SKN)
+
+    def addToList(self, user, message):
+        self.userList.addToList(user, message, self.ListChatters, self.IgnoreEntry.get(), self.SaveEntry.get())
+        if self.userList.size() == 1 and getSaveFileFromKey() != self.SaveEntry.get():
+            saveFileInKey(self.SaveEntry.get())
+    
+    def deleteList(self):
+        self.userList.deleteList(self.ListChatters)
+        
 
     def connectSocket(self):
          if not self.isConnected() and self.toggle_btn.config(TXT)[-1] == txtDisconnect:

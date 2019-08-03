@@ -1,6 +1,6 @@
 import os
 import keyring
-# This is for windows... ... ming generalize later... 
+# This is for windows... ... might generalize later... 
 from keyrings.alt import Windows
 keyring.set_keyring(Windows.RegistryKeyring())
 
@@ -34,8 +34,12 @@ def saveCredentials(app):
     keyring.set_password(service, app.NameEntry.get(), app.ChannelEntry.get())
     keyring.set_password(service, app.NameEntry.get()+app.ChannelEntry.get(), app.OauthEntry.get())
 
-def saveFileInKey(app):
-    keyring.set_password(service, saveF, app.SaveEntry.get())   
+def saveFileInKey(saveFile):
+    keyring.set_password(service, saveF, saveFile)
+
+def getSaveFileFromKey():
+    return keyring.get_password(service, saveF)
+
     
 def loadMsg(entry, line):
     entry.delete(0, 'end')
