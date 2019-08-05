@@ -1,8 +1,8 @@
 import tkFileDialog
+import Socket
+import Initialize 
 from DictLabel import *
 from Tkinter import *
-from Socket import openSocket
-from Initialize import joinRoom
 from Settings import *
 from UserList import UserList
 
@@ -10,8 +10,8 @@ from UserList import UserList
 class Application(Frame):
     connected = False
     logNames = False
-    socket = ''
-    userList = UserList()
+    __socket = ''
+    __userList = UserList()
     
     def __init__(self, master=None):
         Frame.__init__(self, master)
@@ -34,19 +34,18 @@ class Application(Frame):
         self.Stop.config(relief=SKN)
 
     def addToList(self, user, message):
-        self.userList.addToList(user, message, self.ListChatters, self.IgnoreEntry.get(), self.SaveEntry.get())
-        if self.userList.size() == 1 and getSaveFileFromKey() != self.SaveEntry.get():
+        self.__userList.addToList(user, message, self.ListChatters, self.IgnoreEntry.get(), self.SaveEntry.get())
+        if self.__userList.size() == 1 and getSaveFileFromKey() != self.SaveEntry.get():
             saveFileInKey(self.SaveEntry.get())
     
     def deleteList(self):
-        self.userList.deleteList(self.ListChatters)
+        self.__userList.deleteList(self.ListChatters)
         
-
     def connectSocket(self):
          if not self.isConnected() and self.toggle_btn.config(TXT)[-1] == txtDisconnect:
             if (self.OauthEntry.get() and self.NameEntry.get() and self.ChannelEntry.get()):
-                self.socket = openSocket(str(self.OauthEntry.get()), str(self.NameEntry.get()), str(self.ChannelEntry.get()))
-                self.isConnected(joinRoom(self.socket), True)
+                self.__socket = Socket.openSocket(str(self.OauthEntry.get()), str(self.NameEntry.get()), str(self.ChannelEntry.get()))
+                self.isConnected(Initialize.joinRoom(self.__socket), True)
         
     def isConnected(self, boolean=None, fromConnection=False):
         if boolean != None and boolean != self.connected:
@@ -69,7 +68,7 @@ class Application(Frame):
     def toggle(self):
         if self.toggle_btn.config(TXT)[-1] == txtDisconnect:
             self.toggle_btn.config(relief=RSD, text=txtConnect)
-            self.socket.close()
+            self.__socket.close()
             self.isConnected(False)
         else:
             self.toggle_btn.config(relief=SKN, text=txtDisconnect)
@@ -84,8 +83,21 @@ class Application(Frame):
         if newLoc:
             self.SaveEntry.delete(0, END)
             self.SaveEntry.insert(0, newLoc)
+
+    def sendMessage(self, message):
+        if not self.__socket:
+            return
+        if not message:
+            Socket.sendMessage(self.__socket)
+        else:
+            Socket.sendMessage(self.__socket, message, self.ChannelEntry.get())
+
+    def recvBuff(self):
+        return Socket.recv_timeout(self.__socket)
             
-## actual GUI :P 
+#############################################################
+############ actual GUI stuff :P 
+
     def create_widgets(self):
         self.createLabels()
         self.createEntries()

@@ -18,8 +18,3 @@ def joinRoom(s):
                                 return True
 	return False
 	
-def loadingComplete(line):
-	if("End of /NAMES list" in line):
-		return False
-	else:
-		return True

@@ -1,6 +1,5 @@
 import string
 from Read import getUser, getMessage
-from Socket import sendMessage, recv_timeout
 
 import GUI
 
@@ -9,13 +8,13 @@ def twitchBot():
         app.connectSocket()
         
     if app.logNames and app.isConnected():
-        readbuffer = recv_timeout(app.socket)
+        readbuffer = app.recvBuff()
         if readbuffer:
             temp = string.split(readbuffer, "\n")
             readbuffer = temp.pop()
             for line in temp:
                 if "PING" in line:
-                    sendMessage(app.socket)
+                    app.sendMessage()
                     break
                 user = getUser(line)
                 message = getMessage(line)

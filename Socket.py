@@ -20,10 +20,10 @@ def sendMessage(s, message="PONG :tmi.twitch.tv\r\n", CHANNEL=""):
         s.send(messageTemp + "\r\n")
         print("Sent: " + messageTemp)
 
-def recv_timeout(the_socket,timeout=.250):
+def recv_timeout(s, timeout=.250):
         data = ''
         #make socket non blocking
-        the_socket.setblocking(0)
+        s.setblocking(0)
 
         begin=time.time()
         while True:
@@ -35,7 +35,7 @@ def recv_timeout(the_socket,timeout=.250):
                     break
         
                 try:
-                    data = the_socket.recv(1024)
+                    data = s.recv(1024)
                 except:
                     pass
                 
