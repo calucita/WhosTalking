@@ -1,80 +1,42 @@
 import tkFileDialog
-import Socket
-import Initialize 
 from DictLabel import *
 from Tkinter import *
-from Settings import *
-from UserList import UserList
 
-
-class Application(Frame):
-    connected = False
-    logNames = False
-    __socket = ''
-    __userList = UserList()
-    
-    def __init__(self, master=None):
+class GUI(Frame):
+    def __init__(self, caller, master=None):
         Frame.__init__(self, master)
         self.master = master
         self.master.title(txtTitle)
         self.master.geometry('350x450')
         self.create_widgets()
-        loadCredentials(self)
         self.pack(side=LEFT, fill="both", expand=True)
+        self.caller = caller
     
     def onStart(self):
-        if self.isConnected():
-            self.logNames = True
+        if self.caller.isLoggingActive(True):
             self.Start.config(relief=SKN)
             self.Stop.config(relief=RSD)
         
     def onStop(self):
-        self.logNames = False
+        self.caller.isLoggingActive(False)
         self.Start.config(relief=RSD)
         self.Stop.config(relief=SKN)
-
-    def addToList(self, user, message):
-        self.__userList.addToList(user, message, self.ListChatters, self.IgnoreEntry.get(), self.SaveEntry.get())
-        if self.__userList.size() == 1 and getSaveFileFromKey() != self.SaveEntry.get():
-            saveFileInKey(self.SaveEntry.get())
     
-    def deleteList(self):
-        self.__userList.deleteList(self.ListChatters)
-        
-    def connectSocket(self):
-         if not self.isConnected() and self.toggle_btn.config(TXT)[-1] == txtDisconnect:
-            if (self.OauthEntry.get() and self.NameEntry.get() and self.ChannelEntry.get()):
-                self.__socket = Socket.openSocket(str(self.OauthEntry.get()), str(self.NameEntry.get()), str(self.ChannelEntry.get()))
-                self.isConnected(Initialize.joinRoom(self.__socket), True)
-        
-    def isConnected(self, boolean=None, fromConnection=False):
-        if boolean != None and boolean != self.connected:
-            if boolean:
-                self.ConnectLabel[TXT]=txtConnd
-                self.ConnectLabel[FG]=BL
-                if fromConnection:
-                    saveCredentials(self)
-                    self.toggle_btn.config(relief=RSD, text=txtDisconnect)
-            else:
-                if fromConnection:
-                    app.ChannelLabel.delete(0, END)
-                    app.ChannelLabel.insert(txtERROR)
-                else:
-                    self.ConnectLabel[TXT]=txtNotConnd
-                    self.ConnectLabel[FG]=RD
-            self.connected = boolean
-        return self.connected
+    def onDelete(self):
+        self.caller.deleteList()
+        if self.ListChatters:
+            self.ListChatters.delete(0, END)
 
-    def toggle(self):
+    def onToggleConnection(self):
         if self.toggle_btn.config(TXT)[-1] == txtDisconnect:
             self.toggle_btn.config(relief=RSD, text=txtConnect)
-            self.__socket.close()
-            self.isConnected(False)
+            self.caller.setConnection(False)
         else:
             self.toggle_btn.config(relief=SKN, text=txtDisconnect)
+            self.caller.setConnection(True)
         self.onStop()
 
-    def searchFile(self):
+    def onSearch(self):
         if self.SaveEntry.get():
             text = self.SaveEntry.get()
         else:
@@ -83,18 +45,7 @@ class Application(Frame):
         if newLoc:
             self.SaveEntry.delete(0, END)
             self.SaveEntry.insert(0, newLoc)
-
-    def sendMessage(self, message):
-        if not self.__socket:
-            return
-        if not message:
-            Socket.sendMessage(self.__socket)
-        else:
-            Socket.sendMessage(self.__socket, message, self.ChannelEntry.get())
-
-    def recvBuff(self):
-        return Socket.recv_timeout(self.__socket)
-            
+  
 #############################################################
 ############ actual GUI stuff :P 
 
@@ -125,14 +76,14 @@ class Application(Frame):
         self.ButtonFrame =Frame(self)
         self.Start =Button(self.ButtonFrame, width=5, text=txtStart, command=self.onStart)
         self.Stop =Button(self.ButtonFrame, width=5, text=txtStop, command=self.onStop)
-        self.Clear =Button(self.ButtonFrame, width=5, text=txtClear, command=self.deleteList)
+        self.Clear =Button(self.ButtonFrame, width=5, text=txtClear, command=self.onDelete)
         # Location within the frame
         self.Start.grid(column=1, row=1)
         self.Stop.grid(column=1, row=2)
         self.Clear.grid(column=1, row=4)
 
     def createToggle(self):
-        self.toggle_btn = Button(self, text=txtConnect, width=12, relief=RSD, command=self.toggle)
+        self.toggle_btn = Button(self, text=txtConnect, width=12, relief=RSD, command=self.onToggleConnection)
 
     def createList(self):
         self.scrollbar = Scrollbar(self)
@@ -145,7 +96,7 @@ class Application(Frame):
         self.saveFileVar = IntVar()
         self.SaveCheck =Checkbutton(self.SaveFrame, variable=self.saveFileVar) 
         self.SaveEntry =Entry(self, width=35)
-        self.SaveSearch=Button(self, width=1, text="...", command=self.searchFile)
+        self.SaveSearch=Button(self, width=1, text="...", command=self.onSearch)
         self.SaveLabel.grid(column=1, row=1)
         self.SaveCheck.grid(column=2, row=1)
         

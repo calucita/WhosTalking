@@ -8,7 +8,7 @@ service="Whostalking"
 saveF="saveFile"
 
 def loadCredentials(app):
-    fileName = keyring.get_password(service, saveF)
+    fileName = getSaveFileFromKey()
     if fileName:
         app.SaveEntry.insert(0, fileName)
         app.SaveCheck.select()
@@ -39,9 +39,4 @@ def saveFileInKey(saveFile):
 
 def getSaveFileFromKey():
     return keyring.get_password(service, saveF)
-
-    
-def loadMsg(entry, line):
-    entry.delete(0, 'end')
-    entry.insert(0, line.split("=")[1])
 

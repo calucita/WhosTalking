@@ -1,13 +1,10 @@
 import string
 from Read import getUser, getMessage
 
-import GUI
+import Application
 
-def twitchBot():
-    if not app.isConnected(app.connected):
-        app.connectSocket()
-        
-    if app.logNames and app.isConnected():
+def twitchBot():       
+    if app.isConnectionHealthy():
         readbuffer = app.recvBuff()
         if readbuffer:
             temp = string.split(readbuffer, "\n")
@@ -16,12 +13,10 @@ def twitchBot():
                 if "PING" in line:
                     app.sendMessage()
                     break
-                user = getUser(line)
-                message = getMessage(line)
-                app.addToList(user, message)
+                app.addToList(getUser(line), getMessage(line))
 
     app.after(1000, twitchBot)
 			
-app = GUI.Application(GUI.Tk())
+app = Application.Application()
 app.after(1000, twitchBot)
 app.mainloop()
