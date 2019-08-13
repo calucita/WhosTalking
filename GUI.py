@@ -45,6 +45,41 @@ class GUI(Frame):
         if newLoc:
             self.SaveEntry.delete(0, END)
             self.SaveEntry.insert(0, newLoc)
+
+    def getOauthStr(self):
+        return self.OauthEntry.get()
+
+    def getNameStr(self):
+        return self.NameEntry.get() 
+
+    def getChnlStr(self):
+        return self.ChannelEntry.get()
+
+    def getIngoreStr(self):
+        return self.IgnoreEntry.get() 
+
+    def getSaveStr(self):
+        return self.SaveEntry.get() 
+
+    def getChatBox(self):
+        return self.ListChatters
+
+    def setConnecButton(self, connected=False, fromConnection=False):
+        if connected:
+            self.ConnectLabel[TXT]=txtConnd
+            self.ConnectLabel[FG]=BL
+            if fromConnection:
+                self.toggle_btn.config(relief=RSD, text=txtDisconnect)
+        else:
+            if fromConnection:
+                self.ChannelLabel.delete(0, END)
+                self.ChannelLabel.insert(txtERROR)
+            else:
+                self.ConnectLabel[TXT]=txtNotConnd
+                self.ConnectLabel[FG]=RD
+    
+    def isConnectActive(self):
+        return self.toggle_btn.config(TXT)[-1] == txtDisconnect
   
 #############################################################
 ############ actual GUI stuff :P 

@@ -20,31 +20,19 @@ class Application():
     def addToList(self, user, message):
         if not self.__logNames:
             return
-        self.__userList.addToList(user, message, self.__gui.ListChatters, self.__gui.IgnoreEntry.get(), self.__gui.SaveEntry.get())
-        if self.__userList.size() == 1 and Settings.getSaveFileFromKey() != self.__gui.SaveEntry.get():
-            saveFileInKey(self.SaveEntry.get())
+        self.__userList.addToList(user, message, self.__gui.getChatBox(), self.__gui.getIngoreStr(), self.__gui.getSaveStr())
+        if self.__userList.size() == 1 and Settings.getSaveFileFromKey() != self.__gui.getSaveStr():
+            saveFileInKey(self.getSaveStr())
     
     def connectSocket(self):
         if not self.isConnectionHealthy():
-            if (self.__gui.OauthEntry.get() and self.__gui.NameEntry.get() and self.__gui.ChannelEntry.get()):
-                self.__socket = Socket.openSocket(str(self.__gui.OauthEntry.get()), str(self.__gui.NameEntry.get()), str(self.__gui.ChannelEntry.get()))
+            if (self.__gui.getOauthStr() and self.__gui.getNameStr() and self.__gui.getChnlStr()):
+                self.__socket = Socket.openSocket(str(self.__gui.getOauthStr()), str(self.__gui.getNameStr()), str(self.__gui.getChnlStr()))
                 self.isConnected(Initialize.joinRoom(self.__socket), True)
 
     def isConnected(self, boolean=None, fromConnection=False):
         if boolean != None and boolean != self.__connected:
-            if boolean:
-                self.__gui.ConnectLabel[TXT]=txtConnd
-                self.__gui.ConnectLabel[FG]=BL
-                if fromConnection:
-                    Settings.saveCredentials(self.__gui)
-                    self.__gui.toggle_btn.config(relief=RSD, text=txtDisconnect)
-            else:
-                if fromConnection:
-                    app.ChannelLabel.delete(0, END)
-                    app.ChannelLabel.insert(txtERROR)
-                else:
-                    self.__gui.ConnectLabel[TXT]=txtNotConnd
-                    self.__gui.ConnectLabel[FG]=RD
+            self.__gui.setConnecButton(boolean, fromConnection)
             self.__connected = boolean
         return self.__connected
 
@@ -54,13 +42,13 @@ class Application():
         if not message:
             Socket.sendMessage(self.__socket)
         else:
-            Socket.sendMessage(self.__socket, message, self.ChannelEntry.get())
+            Socket.sendMessage(self.__socket, message, self.getChnlStr())
 
     def recvBuff(self):
         return Socket.recv_timeout(self.__socket)
 
     def isConnectionHealthy(self):
-        return self.isConnected() and self.__gui.toggle_btn.config(TXT)[-1] == txtDisconnect
+        return self.isConnected() and self.__gui.isConnectActive()
 
     def isLoggingActive(self, boolean=None):
         if boolean != None:
