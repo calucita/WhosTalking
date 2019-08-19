@@ -3,7 +3,6 @@ import Settings
 import Socket
 import Initialize 
 from UserList import UserList
-from DictLabel import *
 
 class Application():
     __gui = ''
@@ -36,7 +35,7 @@ class Application():
             self.__connected = boolean
         return self.__connected
 
-    def sendMessage(self, message):
+    def sendMessage(self, message=None):
         if not self.__socket:
             return
         if not message:

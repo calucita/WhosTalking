@@ -8,6 +8,7 @@ class GUI(Frame):
         self.master = master
         self.master.title(txtTitle)
         self.master.geometry('350x450')
+        self.master.iconbitmap('boticon.ico')
         self.create_widgets()
         self.pack(side=LEFT, fill="both", expand=True)
         self.caller = caller

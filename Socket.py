@@ -18,7 +18,6 @@ def sendMessage(s, message="PONG :tmi.twitch.tv\r\n", CHANNEL=""):
                 return
         messageTemp = "PRIVMSG #" + CHANNEL + " :" + message
         s.send(messageTemp + "\r\n")
-        print("Sent: " + messageTemp)
 
 def recv_timeout(s, timeout=.250):
         data = ''
