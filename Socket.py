@@ -7,17 +7,17 @@ PORT = 6667
 def openSocket(PASS, IDENT, CHANNEL):
         s = socket.socket()
         s.connect((HOST, PORT))
-        s.send("PASS " + PASS + "\r\n")
-        s.send("NICK " + IDENT + "\r\n")
-        s.send("JOIN #" +  CHANNEL + "\r\n")
+        __send(s, "PASS " + PASS + "\r\n")
+        __send(s, "NICK " + IDENT + "\r\n")
+        __send(s, "JOIN #" +  CHANNEL + "\r\n")
         return s
 	
 def sendMessage(s, message="PONG :tmi.twitch.tv\r\n", CHANNEL=""):
         if not CHANNEL:
-                s.send(message)
+                __send(s, message)
                 return
         messageTemp = "PRIVMSG #" + CHANNEL + " :" + message
-        s.send(messageTemp + "\r\n")
+        __send(s, messageTemp + "\r\n")
 
 def recv_timeout(s, timeout=.250):
         data = ''
@@ -34,8 +34,11 @@ def recv_timeout(s, timeout=.250):
                     break
         
                 try:
-                    data = s.recv(1024)
+                    data = s.recv(1024).decode()
                 except:
                     pass
                 
         return data
+
+def __send(s, message):
+        s.send(str.encode(message))

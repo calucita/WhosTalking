@@ -1,6 +1,5 @@
-import tkFileDialog
 from DictLabel import *
-from Tkinter import *
+from tkinter import *
 
 class GUI(Frame):
     def __init__(self, caller, master=None):
