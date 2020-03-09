@@ -2,6 +2,7 @@ import GUI
 import Settings
 import Socket
 import Initialize 
+import Read
 from UserList import UserList
 
 class Application():
@@ -11,11 +12,18 @@ class Application():
     __socket = ''
     __userList = UserList()
     __saveFile = ''
+    __addOnCommand = False
+    __addingCommand = "!join"
 
     def __init__(self):
         self.__gui = GUI.GUI(self, GUI.Tk())
         Settings.loadCredentials(self.__gui)
 
+    def processLine(self, line):
+        if __addOnCommand and not isJoin(line, __addingCommand):
+            return
+        self.addToList(getUser(line), getMessage(line))
+        
     def addToList(self, user, message):
         if not self.__logNames:
             return

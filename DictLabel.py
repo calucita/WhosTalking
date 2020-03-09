@@ -14,6 +14,7 @@ txtConnect = "Connect"
 txtDisconnect = "Disconnect"
 txtError = "Error"
 txtSave = "Save file"
+txtSettings = "Settings"
 
 # tk helpers
 TXT = "text"

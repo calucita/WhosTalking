@@ -32,6 +32,13 @@ class UserList():
                     except:
                         pass
 
+    def removeFromList(self, user, listChatters, fileVar):
+        if not listChatters:
+            return
+        if user:
+            if not (user in self.__names):
+                listChatters... ## check and remove things 
+
     def deleteList(self):
         self.__names = []
         if os.path.isfile(self.__saveFilevar):

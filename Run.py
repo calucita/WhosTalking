@@ -1,5 +1,3 @@
-from Read import getUser, getMessage
-
 import Application
 
 def twitchBot():       
@@ -12,10 +10,10 @@ def twitchBot():
                 if "PING" in line:
                     app.sendMessage()
                     break
-                app.addToList(getUser(line), getMessage(line))
+                app.processLine(line)
 
     app.after(1000, twitchBot)
-			
+
 app = Application.Application()
 app.after(1000, twitchBot)
 app.mainloop()

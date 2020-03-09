@@ -108,21 +108,24 @@ class GUI(Frame):
         self.IgnoreEntry =Entry(self, width=35)
 
     def createButtons(self):
-        self.ButtonFrame =Frame(self)
-        self.Start =Button(self.ButtonFrame, width=5, text=txtStart, command=self.onStart)
-        self.Stop =Button(self.ButtonFrame, width=5, text=txtStop, command=self.onStop)
-        self.Clear =Button(self.ButtonFrame, width=5, text=txtClear, command=self.onDelete)
+#        self.settingsButton = Button(self, text=txtSettings, width=12)
+        self.ButtonFrame = Frame(self, height=40)
+        self.settingsButton = Button(self.ButtonFrame, width=12, text=txtSettings)
+        self.Start = Button(self.ButtonFrame, width=5, text=txtStart, command=self.onStart)
+        self.Stop = Button(self.ButtonFrame, width=5, text=txtStop, command=self.onStop)
+        self.Clear = Button(self.ButtonFrame, width=5, text=txtClear, command=self.onDelete)
         # Location within the frame
-        self.Start.grid(column=1, row=1)
-        self.Stop.grid(column=1, row=2)
-        self.Clear.grid(column=1, row=4)
+        self.settingsButton.grid(column=1, row=1, sticky=N, pady=(0,50))
+        self.Start.grid(column=1, row=3, sticky=S)
+        self.Stop.grid(column=1, row=4, sticky=S)
+        self.Clear.grid(column=1, row=5, sticky=S)
 
     def createToggle(self):
         self.toggle_btn = Button(self, text=txtConnect, width=12, relief=RSD, command=self.onToggleConnection)
 
     def createList(self):
         self.scrollbar = Scrollbar(self)
-        self.ListChatters =Listbox(self, height=12, yscrollcommand=self.scrollbar.set, font=('Helvatica',12))
+        self.ListChatters = Listbox(self, height=12, yscrollcommand=self.scrollbar.set, font=('Helvatica',12))
         self.scrollbar.config(command=self.ListChatters.yview)
         
     def createSave(self):
@@ -137,11 +140,11 @@ class GUI(Frame):
         
     def setPossitions(self):
         # Column 1
-        self.NameLabel.grid(column=1, row=1, sticky=W)
-        self.OauthLabel.grid(column=1, row=2, sticky=W)
-        self.ChannelLabel.grid(column=1, row=3, sticky=W)
+        self.NameLabel.grid(column=1, row=1, sticky=W, padx=15)
+        self.OauthLabel.grid(column=1, row=2, sticky=W, padx=15)
+        self.ChannelLabel.grid(column=1, row=3, sticky=W, padx=15)
         self.toggle_btn.grid(column=1, row=4)
-        self.ButtonFrame.grid(column=1, row=6)
+        self.ButtonFrame.grid(column=1, row=6, sticky=N)
         self.IgnoreLabel.grid(column=1, row=7)
         self.SaveFrame.grid(column=1, row=8)
         
