@@ -42,6 +42,8 @@ class Application():
         if boolean != None and boolean != self.__connected:
             self.__gui.setConnecButton(boolean, fromConnection)
             self.__connected = boolean
+            if (self.__connected):
+                Settings.saveCredentials(self.__gui)
         return self.__connected
 
     def sendMessage(self, message=None):
