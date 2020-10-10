@@ -2,7 +2,7 @@ import CommandControl
 
 class JoinControl(CommandControl): 
 
-    def doAction(self):
+    def doAction(self, user, message):
         pass
 
     def ReName(self, command):

@@ -1,11 +1,11 @@
 import time
-from Socket import sendMessage, recv_timeout
+import Socket_local
 
 def joinRoom(s):
 	readbuffer = ""
 	start = time.time()
 	while time.time() - start < 5:
-		readbuffer = readbuffer + recv_timeout(s)
+		readbuffer = readbuffer + s.recv_timeout()
 		temp = str.split(readbuffer, "\n")
 		readbuffer = temp.pop()
 

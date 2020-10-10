@@ -1,8 +1,8 @@
 import GUI
 import Settings
-import Socket
+import Socket_local
 import Initialize 
-import Read
+from Read import getUser, getMessage, isCommand
 from UserList import UserList
 
 class Application():
@@ -20,7 +20,7 @@ class Application():
         Settings.loadCredentials(self.__gui)
 
     def processLine(self, line):
-        if __addOnCommand and not isJoin(line, __addingCommand):
+        if self.__addOnCommand and not isJoin(line, self.__addingCommand):
             return
         self.addToList(getUser(line), getMessage(line))
         
@@ -34,7 +34,8 @@ class Application():
     def connectSocket(self):
         if not self.isConnectionHealthy():
             if (self.__gui.getOauthStr() and self.__gui.getNameStr() and self.__gui.getChnlStr()):
-                self.__socket = Socket.openSocket(str(self.__gui.getOauthStr()), str(self.__gui.getNameStr()), str(self.__gui.getChnlStr()))
+                self.__socket = Socket_local.Socket_local()
+                self.__socket.openSocket(str(self.__gui.getOauthStr()), str(self.__gui.getNameStr()), str(self.__gui.getChnlStr()))
                 self.isConnected(Initialize.joinRoom(self.__socket), True)
 
     def isConnected(self, boolean=None, fromConnection=False):
@@ -47,12 +48,12 @@ class Application():
         if not self.__socket:
             return
         if not message:
-            Socket.sendMessage(self.__socket)
+            self.__socket.sendMessage(self.__socket)
         else:
-            Socket.sendMessage(self.__socket, message, self.getChnlStr())
+            self.__socket.sendMessage(self.__socket, message, self.getChnlStr())
 
     def recvBuff(self):
-        return Socket.recv_timeout(self.__socket)
+        return self.__socket.recv_timeout()
 
     def isConnectionHealthy(self):
         return self.isConnected() and self.__gui.isConnectActive()

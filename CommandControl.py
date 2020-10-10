@@ -3,7 +3,7 @@ class CommandControl(object):
     def Name(self):
         return __name__
 
-    def doAction(self):
+    def doAction(self, user, message):
         pass
 
     def ReName(self, command):
