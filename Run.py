@@ -7,6 +7,7 @@ def twitchBot():
             temp = str.split(readbuffer, "\n")
             readbuffer = temp.pop()
             for line in temp:
+                #print(line)
                 if "PING" in line:
                     app.sendMessage()
                     break

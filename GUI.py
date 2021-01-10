@@ -1,5 +1,6 @@
 from DictLabel import *
 from tkinter import *
+import TwitchOauth
 
 class GUI(Frame):
     def __init__(self, caller, master=None):
@@ -7,7 +8,7 @@ class GUI(Frame):
         self.master = master
         self.master.title(txtTitle)
         self.master.geometry('350x450')
-        self.master.iconbitmap('boticon.ico')
+        self.master.iconbitmap('img/boticon.ico')
         self.create_widgets()
         self.pack(side=LEFT, fill="both", expand=True)
         self.caller = caller
@@ -47,6 +48,10 @@ class GUI(Frame):
             self.SaveEntry.insert(0, newLoc)
 
     def getOauthStr(self):
+        #print(self.OauthEntry.get())
+        if self.OauthEntry.get() == '':
+            oauth = TwitchOauth.TwitchOauth()
+            self.OauthEntry.insert(0, 'oauth:'+ oauth.authenticate())
         return self.OauthEntry.get()
 
     def getNameStr(self):
@@ -64,16 +69,27 @@ class GUI(Frame):
     def getChatBox(self):
         return self.ListChatters
 
-    def setConnecButton(self, connected=False, fromConnection=False):
-        if connected:
+    def setConnecButton(self, boolean = None, connected=0, fromConnection=False):
+        if boolean:
             self.ConnectLabel[TXT]=txtConnd
             self.ConnectLabel[FG]=BL
             if fromConnection:
                 self.toggle_btn.config(relief=RSD, text=txtDisconnect)
         else:
             if fromConnection:
-                self.ChannelLabel.delete(0, END)
-                self.ChannelLabel.insert(txtERROR)
+                #self.ChannelLabel.delete(0, END)
+                if connected == 1:
+                    self.ConnectLabel[TXT]=txtErrorBot
+                if connected == 2:
+                    self.ConnectLabel[TXT]=txtErrorChannel
+                if connected == 3:
+                    self.ConnectLabel[TXT]=txtErrorOauth
+                if connected == 4:
+                    self.ConnectLabel[TXT]=txtErrorAuthenticationFailed
+                if connected == 99:
+                    self.ConnectLabel[TXT]=txtERROR
+
+                self.toggle_btn.config(relief=RSD, text=txtConnect)
             else:
                 self.ConnectLabel[TXT]=txtNotConnd
                 self.ConnectLabel[FG]=RD
@@ -108,14 +124,13 @@ class GUI(Frame):
         self.IgnoreEntry =Entry(self, width=35)
 
     def createButtons(self):
-#        self.settingsButton = Button(self, text=txtSettings, width=12)
         self.ButtonFrame = Frame(self, height=40)
-        self.settingsButton = Button(self.ButtonFrame, width=12, text=txtSettings)
+        ## self.settingsButton = Button(self.ButtonFrame, width=12, text=txtSettings)
         self.Start = Button(self.ButtonFrame, width=5, text=txtStart, command=self.onStart)
         self.Stop = Button(self.ButtonFrame, width=5, text=txtStop, command=self.onStop)
         self.Clear = Button(self.ButtonFrame, width=5, text=txtClear, command=self.onDelete)
         # Location within the frame
-        self.settingsButton.grid(column=1, row=1, sticky=N, pady=(0,50))
+        ## self.settingsButton.grid(column=1, row=1, sticky=N, pady=(0,50))
         self.Start.grid(column=1, row=3, sticky=S)
         self.Stop.grid(column=1, row=4, sticky=S)
         self.Clear.grid(column=1, row=5, sticky=S)
@@ -143,8 +158,9 @@ class GUI(Frame):
         self.NameLabel.grid(column=1, row=1, sticky=W, padx=15)
         self.OauthLabel.grid(column=1, row=2, sticky=W, padx=15)
         self.ChannelLabel.grid(column=1, row=3, sticky=W, padx=15)
-        self.toggle_btn.grid(column=1, row=4)
-        self.ButtonFrame.grid(column=1, row=6, sticky=N)
+        self.toggle_btn.grid(column=1, row=5)
+
+        self.ButtonFrame.grid(column=1, row=6, sticky=N, pady=30)
         self.IgnoreLabel.grid(column=1, row=7)
         self.SaveFrame.grid(column=1, row=8)
         
@@ -152,8 +168,8 @@ class GUI(Frame):
         self.NameEntry.grid(column=2, row=1, sticky=W)
         self.OauthEntry.grid(column=2, row=2, sticky=W)
         self.ChannelEntry.grid(column=2, row=3, sticky=W)
-        self.ConnectLabel.grid(column=2, row=4)
-        self.ListLabel.grid(column=2, row=5)
+        self.ConnectLabel.grid(column=2, row=5)
+        self.ListLabel.grid(column=2, row=6)
 
         Grid.rowconfigure(self, 6, weight=1)
         Grid.columnconfigure(self, 2, weight=1)
@@ -163,5 +179,5 @@ class GUI(Frame):
         self.SaveEntry.grid(column=2, row=8, sticky=W+E, pady=10)
 
         # Column 3
-        self.scrollbar.grid(column=3, row=6, sticky=N+S)
+        self.scrollbar.grid(column=3, row=7, sticky=N+S)
         self.SaveSearch.grid(column=3, row=8)

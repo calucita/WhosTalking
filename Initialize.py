@@ -1,19 +1,29 @@
 import time
 import Socket_local
 
-def joinRoom(s):
-	readbuffer = ""
-	start = time.time()
-	while time.time() - start < 5:
-		readbuffer = readbuffer + s.recv_timeout()
-		temp = str.split(readbuffer, "\n")
-		readbuffer = temp.pop()
+def joinRoom(s, expectedUser):
+    readbuffer = ""
+    start = time.time()
+    while time.time() - start < 5:
+        readbuffer = readbuffer + s.recv_timeout()
+        temp = str.split(readbuffer, "\n")
+        readbuffer = temp.pop()
+        for line in temp:
+            #print(line)
+            if "Login authentication failed" in line:
+                return 4
 
-		for line in temp:
-			if "failed" in line:
-				return False
-			if "Welcome" in line:                        
+            if "Improperly formatted auth" in line:
+                return 3
+
+            if expectedUser not in line:
+                s.close()
+                return 1
+
+            if "failed" in line:
+                return 99
+
+            if ":End of /NAMES list" in line:                        
 				#s.sendMessage("I'm here! I'm calu's bot :3")
-				return True
-	return False
-
+                return 0
+    return 2

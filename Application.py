@@ -12,16 +12,12 @@ class Application():
     __socket = ''
     __userList = UserList()
     __saveFile = ''
-    __addOnCommand = False
-    __addingCommand = "!join"
 
     def __init__(self):
         self.__gui = GUI.GUI(self, GUI.Tk())
         Settings.loadCredentials(self.__gui)
 
     def processLine(self, line):
-        if self.__addOnCommand and not isJoin(line, self.__addingCommand):
-            return
         self.addToList(getUser(line), getMessage(line))
         
     def addToList(self, user, message):
@@ -36,26 +32,30 @@ class Application():
             if (self.__gui.getOauthStr() and self.__gui.getNameStr() and self.__gui.getChnlStr()):
                 self.__socket = Socket_local.Socket_local()
                 self.__socket.openSocket(str(self.__gui.getOauthStr()), str(self.__gui.getNameStr()), str(self.__gui.getChnlStr()))
-                self.isConnected(Initialize.joinRoom(self.__socket), True)
+                connectionError = Initialize.joinRoom(self.__socket, self.__gui.getNameStr())
+                if connectionError:
+                    self.__socket = ''
+                self.isConnected(connectionError == 0, True, connectionError)
 
-    def isConnected(self, boolean=None, fromConnection=False):
-        if boolean != None and boolean != self.__connected:
-            self.__gui.setConnecButton(boolean, fromConnection)
+    def isConnected(self, boolean=None, fromConnection=False, errorCode=0):
+        if boolean != None:
+            self.__gui.setConnecButton(boolean, errorCode, fromConnection)
             self.__connected = boolean
             if (self.__connected):
                 Settings.saveCredentials(self.__gui)
         return self.__connected
 
     def sendMessage(self, message=None):
-        if not self.__socket:
+        if self.__socket != '':
             return
         if not message:
-            self.__socket.sendMessage(self.__socket)
+            self.__socket.sendMessage()
         else:
-            self.__socket.sendMessage(self.__socket, message, self.getChnlStr())
+            self.__socket.sendMessage(message, self.getChnlStr())
 
     def recvBuff(self):
-        return self.__socket.recv_timeout()
+        if self.__socket != '':
+            return self.__socket.recv_timeout()
 
     def isConnectionHealthy(self):
         return self.isConnected() and self.__gui.isConnectActive()
@@ -73,7 +73,9 @@ class Application():
         if boolean:
             self.connectSocket()
         else:
-            self.__socket.close()
+            if self.__socket != '':
+                self.__socket.close()
+                self.__socket = ''
             self.isConnected(False)
 
     def after(self, time, method):

@@ -21,7 +21,7 @@ class Socket_local():
 
     def sendMessage(self, message="PONG :tmi.twitch.tv\r\n", CHANNEL=""):
         if not CHANNEL:
-            self.__send( message)
+            self.__send(message)
             return
         messageTemp = "PRIVMSG #" + CHANNEL + " :" + message
         self.__send(messageTemp + "\r\n")
@@ -49,3 +49,6 @@ class Socket_local():
 
     def __send(self, message):
         self.__socket.send(str.encode(message))
+
+    def close(self):
+        self.__socket.close()
