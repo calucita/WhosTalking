@@ -1,6 +1,6 @@
 import AppInfo
 
-#  Copyright (c) 2020. Lena "Teekeks" During <info@teawork.de>
+# Based on the work of Lena "Teekeks" <info@teawork.de>
 import urllib.parse
 import uuid
 from typing import Union

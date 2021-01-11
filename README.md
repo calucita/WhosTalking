@@ -4,7 +4,8 @@ Needs Python 3.7
 Twitch bot to keep track of who is actually talking.
 
 Based on the work of https://github.com/BadNidalee/ChatBot
-Using pyTwitchAPI https://github.com/Teekeks/pyTwitchAPI
+
+Based on pyTwitchAPI https://github.com/Teekeks/pyTwitchAPI
 
 # Download
 If you just want to use the bot go to Releases (https://github.com/calucita/WhosTalking/releases) and download the executable that suits you best. 
@@ -27,6 +28,5 @@ Let me know of bugs... I might be interested in fixing them...
 the code is fugly as heck. I know. shhhhhhh
 
 # Necessary libraries (pip install)
-- pyTwitchAPI
 - keyring
 - keyrings.alt
