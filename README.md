@@ -3,8 +3,8 @@ Needs Python 3.9
 
 Twitch bot to keep track of who is actually talking.
 
-Based on the work of https://github.com/BadNidalee/ChatBot
-Based on pyTwitchAPI https://github.com/Teekeks/pyTwitchAPI
+- Based on the work of https://github.com/BadNidalee/ChatBot
+- Based on pyTwitchAPI https://github.com/Teekeks/pyTwitchAPI
 
 # Download
 If you just want to use the bot go to Releases (https://github.com/calucita/WhosTalking/releases) and download the executable that suits you best. 
