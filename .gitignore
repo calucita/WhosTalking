@@ -1,2 +1,5 @@
 *.pyc
 *.exe
+.vs
+build
+AppInfo.py

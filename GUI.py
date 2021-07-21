@@ -1,5 +1,6 @@
 from DictLabel import *
 from tkinter import *
+from os import path
 import TwitchOauth
 
 class GUI(Frame):
@@ -8,7 +9,7 @@ class GUI(Frame):
         self.master = master
         self.master.title(txtTitle)
         self.master.geometry('350x450')
-        #self.master.iconbitmap('boticon.ico')
+        self.master.iconbitmap(path.join(path.dirname(__file__), 'boticon.ico'))
         self.create_widgets()
         self.pack(side=LEFT, fill="both", expand=True)
         self.caller = caller

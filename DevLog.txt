@@ -1,0 +1,33 @@
+
+#####Dev log 21/07/2021
+>>>>>>>>>>> pyinstaller --onefile Run.spec
+
+>>>>>> starting from scratch
+py -m pip --version
+pip install aiohttp
+pip install requests
+pip install keyring
+pip install keyrings.alt
+
+#####Dev log 10/01/2020
+#Because dev forgets what dev does.
+- rebrew of the twitchAPI to not need to send/store an app secret.
+
+#Because dev forgets what dev needs.
+- Save date of oauth to renew token (dunno if needed)
+- Handle log-in errors to allow for re-autorization. 
+
+#####Dev log 09/01/2020
+#Because dev forgets what dev does. 
+- pip install twitchAPI				# Required for new OAUTH. 
+
+#Because dev forgets what dev needs.
+- oauth for allowing for CHAT_EDIT, CHAT_READ. To be able to send and receive messages.
+
+
+#Because dev finds that younger dev has made mistakes.
+- 'Socket_local' object has no attribute 'close'
+	Done. 
+- From the ask to add commands to the app, some things got left half way. One of those is the "isJoin" method that should've determined if the line read was joining the queue or not. This will be removed as the functionality is not available. 
+- Fixed issue that would prevent the app from responting to twitch's ping. 
+
