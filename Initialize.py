@@ -16,7 +16,7 @@ def joinRoom(s, expectedUser):
             if "Improperly formatted auth" in line:
                 return 3
 
-            if expectedUser not in line:
+            if expectedUser.lower() not in line.lower():
                 s.close()
                 return 1
 
