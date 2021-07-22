@@ -24,8 +24,9 @@ class Application():
         if not self.__logNames:
             return
         self.__userList.addToList(user, message, self.__gui.getChatBox(), self.__gui.getIngoreStr(), self.__gui.getSaveStr())
+
         if self.__userList.size() == 1 and Settings.getSaveFileFromKey() != self.__gui.getSaveStr():
-            saveFileInKey(self.getSaveStr())
+            Settings.saveFileInKey(self.__gui.getSaveStr())
     
     def connectSocket(self):
         if not self.isConnectionHealthy():

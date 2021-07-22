@@ -1,3 +1,6 @@
+#####Dev log 22/07/2021
+Bug where the imported modules wee not referenced correctly and would stop the bot from loading properly
+
 
 #####Dev log 21/07/2021
 >>>>>>>>>>> pyinstaller --onefile Run.spec

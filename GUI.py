@@ -180,5 +180,5 @@ class GUI(Frame):
         self.SaveEntry.grid(column=2, row=8, sticky=W+E, pady=10)
 
         # Column 3
-        self.scrollbar.grid(column=3, row=7, sticky=N+S)
+        self.scrollbar.grid(column=3, row=6, sticky=N+S)
         self.SaveSearch.grid(column=3, row=8)
