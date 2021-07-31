@@ -1,3 +1,8 @@
+#####Dev log 31/07/2021
+Bug where the bot would stop logging if start button was pressed after the stop button had been pressed
+Bug where the bot was not ponging back
+Found bug on the authentication: if the authentication fails the bot hangs.
+
 #####Dev log 22/07/2021
 Bug where the imported modules wee not referenced correctly and would stop the bot from loading properly
 
