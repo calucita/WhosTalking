@@ -48,6 +48,7 @@ class Socket_local():
         return data
 
     def __send(self, message):
+        #print(message)
         self.__socket.send(str.encode(message))
 
     def close(self):

@@ -47,7 +47,8 @@ class Application():
         return self.__connected
 
     def sendMessage(self, message=None):
-        if self.__socket != '':
+        if self.__socket == '':
+            # todo: maybe add error here?
             return
         if not message:
             self.__socket.sendMessage()
@@ -64,7 +65,7 @@ class Application():
     def isLoggingActive(self, boolean=None):
         if boolean != None:
             self.__logNames = boolean
-        self.__logNames = self.__logNames and self.isConnectionHealthy()
+        self.__logNames = ( self.__logNames and self.isConnectionHealthy() )
         return self.__logNames
 
     def deleteList(self):
