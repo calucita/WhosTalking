@@ -20,7 +20,6 @@ class GUI(Frame):
             self.Stop.config(relief=RSD)
         
     def onStop(self):
-        print("onstop")
         if self.caller.isLoggingActive(False) == False:
             self.Start.config(relief=RSD)
             self.Stop.config(relief=SKN)
