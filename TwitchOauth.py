@@ -43,7 +43,7 @@ class TwitchOauth:
                 await asyncio.sleep(1)
             except (CancelledError, asyncio.CancelledError):
                 pass
-        for task in asyncio.Task.all_tasks(self.__loop):
+        for task in asyncio.all_tasks(self.__loop):
             task.cancel()
 
     def __run(self, runner: 'web.AppRunner'):
@@ -123,5 +123,3 @@ class TwitchOauth:
         self.stop()
         self.__state = ''
         return self.__user_token
-
-

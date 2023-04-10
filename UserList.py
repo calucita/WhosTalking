@@ -46,3 +46,13 @@ class UserList():
 
     def size(self):
         return len(self.__names)
+    
+    def selectEntry(self, _num, listChatters):
+        if _num < self.size():
+            user = self.__names[_num]
+            message = listChatters.get(_num)
+            listChatters.delete(_num)
+            del self.__names[_num]
+            if message:
+                return message
+            return user

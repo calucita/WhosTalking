@@ -2,13 +2,18 @@ import GUI
 import Settings
 import Socket_local
 import Initialize 
+import random
 from Read import getUser, getMessage, isCommand
 from UserList import UserList
+
+joinCmd = "!join"
+pickCmd = "!pick"
 
 class Application():
     __gui = ''
     __connected = False
-    __logNames = False
+    __logNamesHello = False
+    __logNamesJoin = False
     __socket = ''
     __userList = UserList()
     __saveFile = ''
@@ -18,10 +23,32 @@ class Application():
         Settings.loadCredentials(self.__gui)
 
     def processLine(self, line):
-        self.addToList(getUser(line), getMessage(line))
-        
+        if self.__logNamesHello:
+            self.addToList(getUser(line), getMessage(line))
+        elif self.__logNamesJoin:
+            message = getMessage(line)
+            if  message.startswith(joinCmd):
+                message = message.replace(joinCmd, '', 1)
+                self.addToList(getUser(line), message)
+            elif message.startswith(pickCmd) and getUser(line).lower() == self.__gui.getChnlStr().lower():
+                self.pickUser()
+                return
+
+    def pickUser(self):
+        if self.__userList.size() == 0:
+            self.sendMessage("No one has joined yet... :( ... ")
+            return
+
+        chosen=self.__userList.selectEntry(random.randint(0, self.__userList.size()-1), self.__gui.getChatBox()).split(":   ")
+        user = chosen[0]
+        message = chosen[1].strip()
+        if len(chosen) == 2 and message:
+            self.sendMessage("Winner! User: "+ user +" with message "+ message)
+        else:
+            self.sendMessage("Winner! User: "+ user)
+       
     def addToList(self, user, message):
-        if not self.__logNames:
+        if not self.__logNamesHello and not self.__logNamesJoin:
             return
         self.__userList.addToList(user, message, self.__gui.getChatBox(), self.__gui.getIngoreStr(), self.__gui.getSaveStr())
 
@@ -53,7 +80,7 @@ class Application():
         if not message:
             self.__socket.sendMessage()
         else:
-            self.__socket.sendMessage(message, self.getChnlStr())
+            self.__socket.sendMessage(message, self.__gui.getChnlStr())
 
     def recvBuff(self):
         if self.__socket != '':
@@ -62,11 +89,17 @@ class Application():
     def isConnectionHealthy(self):
         return self.isConnected() and self.__gui.isConnectActive()
 
-    def isLoggingActive(self, boolean=None):
+    def isLoggingActiveHello(self, boolean=None):
         if boolean != None:
-            self.__logNames = boolean
-        self.__logNames = ( self.__logNames and self.isConnectionHealthy() )
-        return self.__logNames
+            self.__logNamesHello = boolean
+        self.__logNamesHello = ( self.__logNamesHello and self.isConnectionHealthy() )
+        return self.__logNamesHello
+
+    def isLoggingActiveJoin(self, boolean=None):
+        if boolean != None:
+            self.__logNamesJoin = boolean
+        self.__logNamesJoin = ( self.__logNamesJoin and self.isConnectionHealthy() )
+        return self.__logNamesJoin
 
     def deleteList(self):
         self.__userList.deleteList()

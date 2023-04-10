@@ -19,6 +19,9 @@ txtErrorOauth = "Improperly formatted auth"
 txtErrorAuthenticationFailed = "Login authentication failed"
 txtSave = "Save file"
 txtSettings = "Settings"
+txtHelloMode="Welcome Mode"
+txtJoinMode="Join Mode"
+txtJoinPick="Pick"
 
 # tk helpers
 TXT = "text"

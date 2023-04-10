@@ -14,16 +14,29 @@ class GUI(Frame):
         self.pack(side=LEFT, fill="both", expand=True)
         self.caller = caller
     
-    def onStart(self):
-        if self.caller.isLoggingActive(True):
-            self.Start.config(relief=SKN)
+    def onStartHello(self):
+        self.onStop()
+        if self.caller.isLoggingActiveHello(True):
+            self.StartHello.config(relief=SKN)
             self.Stop.config(relief=RSD)
         
     def onStop(self):
-        if self.caller.isLoggingActive(False) == False:
-            self.Start.config(relief=RSD)
+        if not self.caller.isLoggingActiveHello(False) and not self.caller.isLoggingActiveJoin(False):
+            self.StartHello.config(relief=RSD)
+            self.StartJoin.config(relief=RSD)
             self.Stop.config(relief=SKN)
     
+    def onStartJoin(self):
+        self.onStop()
+        if self.caller.isLoggingActiveJoin(True):
+            self.StartJoin.config(relief=SKN)
+            self.Stop.config(relief=RSD)
+            self.caller.sendMessage("Name pool open! Type !join to join!")
+
+    def onJoinPick(self):
+        if self.caller.isLoggingActiveJoin():
+            self.caller.pickUser()
+            
     def onDelete(self):
         self.caller.deleteList()
         if self.ListChatters:
@@ -127,14 +140,32 @@ class GUI(Frame):
     def createButtons(self):
         self.ButtonFrame = Frame(self, height=40)
         ## self.settingsButton = Button(self.ButtonFrame, width=12, text=txtSettings)
-        self.Start = Button(self.ButtonFrame, width=5, text=txtStart, command=self.onStart)
-        self.Stop = Button(self.ButtonFrame, width=5, text=txtStop, command=self.onStop)
         self.Clear = Button(self.ButtonFrame, width=5, text=txtClear, command=self.onDelete)
+        self.Stop = Button(self.ButtonFrame, width=5, text=txtStop, command=self.onStop)
+
+
+        self.HelloMode = Label(self.ButtonFrame, text=txtHelloMode)
+        self.StartHello = Button(self.ButtonFrame, width=5, text=txtStart, command=self.onStartHello)
+        
+        self.JoinMode = Label(self.ButtonFrame, text=txtJoinMode)
+        self.StartJoin = Button(self.ButtonFrame, width=5, text=txtStart, command=self.onStartJoin)
+        self.JoinPick = Button(self.ButtonFrame, width=5, text=txtJoinPick, command=self.onJoinPick)
+        
+
         # Location within the frame
         ## self.settingsButton.grid(column=1, row=1, sticky=N, pady=(0,50))
-        self.Start.grid(column=1, row=3, sticky=S)
-        self.Stop.grid(column=1, row=4, sticky=S)
-        self.Clear.grid(column=1, row=5, sticky=S)
+        self.Clear.grid(column=1, row=2, sticky=S)
+        self.Stop.grid(column=1, row=3, sticky=S)
+
+        self.HelloMode.grid(column=1, row=6, sticky=S)
+        self.StartHello.grid(column=1, row=7, sticky=S)
+        self.ButtonFrame.grid_rowconfigure(6, minsize=40)
+
+        self.JoinMode.grid(column=1, row=9, sticky=S)
+        self.StartJoin.grid(column=1, row=10, sticky=S)
+        self.JoinPick.grid(column=1, row=11, sticky=S)
+        self.ButtonFrame.grid_rowconfigure(9, minsize=40)
+    
 
     def createToggle(self):
         self.toggle_btn = Button(self, text=txtConnect, width=12, relief=RSD, command=self.onToggleConnection)
