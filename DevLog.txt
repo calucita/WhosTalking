@@ -1,3 +1,14 @@
+#####Dev log 10/04/2023 - part 2:
+Added !leave feature for chatters
+Minor improvement in the oauth process... Still missing how to detect if the window has been closed... 
+Updated the spec file. 
+
+Remember to build: pyinstaller Run.spec :) ;) 
+
+#####Dev log 10/04/2023
+Added feature to pick a name from a list
+Fixes oauth bug and sending message bug
+
 #####Dev log 31/07/2021
 Bug where the bot would stop logging if start button was pressed after the stop button had been pressed
 Bug where the bot was not ponging back

@@ -41,22 +41,25 @@ class TwitchOauth:
         while not self.__can_close:
             try:
                 await asyncio.sleep(1)
-            except (CancelledError, asyncio.CancelledError):
+            except:
+                self.__server_running = False
                 pass
         for task in asyncio.all_tasks(self.__loop):
             task.cancel()
+            self.__server_running = False
 
     def __run(self, runner: 'web.AppRunner'):
-        self.__runner = runner
-        self.__loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(self.__loop)
-        self.__loop.run_until_complete(runner.setup())
-        site = web.TCPSite(runner, self.host, self.port)
-        self.__loop.run_until_complete(site.start())
-        self.__server_running = True
         try:
+            self.__runner = runner
+            self.__loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(self.__loop)
+            self.__loop.run_until_complete(runner.setup())
+            site = web.TCPSite(runner, self.host, self.port)
+            self.__loop.run_until_complete(site.start())
+            self.__server_running = True
             self.__loop.run_until_complete(self.__run_check())
-        except (CancelledError, asyncio.CancelledError):
+        except:
+            self.__server_running = False
             pass
 
     def __start(self):
@@ -68,11 +71,14 @@ class TwitchOauth:
         :rtype: None
         """
         self.__can_close = True
-
+        self.__server_running = False
 
     async def __handle_callbackGet(self, request: 'web.Request'):
-        # Assume that everything is fine and verify in the post.
-        fn = path.join(path.dirname(__file__), 'Success.html')
+        fn = path.join(path.dirname(__file__), 'Failed.html')
+        val = str(request.message)
+        if not str.__contains__(val, "access_denied"):
+            # Assume that everything else is fine and verify in the post.
+            fn = path.join(path.dirname(__file__), 'Success.html')
         fd = ''
         with open(fn, 'r') as f:
             fd = f.read()
@@ -82,18 +88,25 @@ class TwitchOauth:
 
     async def __handle_callbackPost(self, request: 'web.Request'):
         val = str(request.content._buffer)
-        val = val.split("#")[1].split("\\r\\n")[0].split("&")
+        fn = path.join(path.dirname(__file__), 'Failed.html')
+        if not str.__contains__(val, "access_denied"):
+            val = val.split("#")[1].split("\\r\\n")[0].split("&")
         
-        # invalid state!
-        if val[2].split("=")[1] != self.__state:
-            return web.Response(status=401)
+            # invalid state!
+            if val[2].split("=")[1] != self.__state:
+                self.__server_running = False
+                return web.Response(status=401)
         
-        self.__user_token = val[0].split("=")[1]
-        if self.__user_token is None:
-            # must provide code
-            return web.Response(status=400)
+            self.__user_token = val[0].split("=")[1]
+            if self.__user_token is None:
+                # must provide code
+                self.__server_running = False
+                return web.Response(status=400)
 
-        fn = path.join(path.dirname(__file__), 'Success.html')
+            fn = path.join(path.dirname(__file__), 'Success.html')
+        else:
+            self.__user_token = "  "
+
         fd = ''
         with open(fn, 'r') as f:
             fd = f.read()
@@ -117,9 +130,8 @@ class TwitchOauth:
         # open in browser
 
         webbrowser.open(url, new=2)
-        while self.__user_token is None:
-            sleep(0.01)
-
+        while self.__user_token is None and self.__server_running:
+            sleep(0.1)
         self.stop()
         self.__state = ''
         return self.__user_token

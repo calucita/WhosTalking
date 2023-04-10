@@ -1,6 +1,8 @@
 import os
 from DictLabel import *
 
+spaceString = ":   "
+
 class UserList():
     __names = []
     __saveFilevar = ""
@@ -10,7 +12,7 @@ class UserList():
             return
         if user and message:
             if not (user in self.__names) and not (user in ignoreList):
-                listChatters.insert(END, user + ":   " + message)
+                listChatters.insert(END, user + spaceString + message)
                 self.__names.append(user)
                 if fileVar and (not self.__saveFilevar or self.__saveFilevar != fileVar):
                     self.__saveFilevar = fileVar
@@ -47,12 +49,14 @@ class UserList():
     def size(self):
         return len(self.__names)
     
+    def removeUser(self, user, listChatters):
+        if user in self.__names:
+            index = self.__names.index(user)
+            self.selectEntry(index, listChatters)
+
     def selectEntry(self, _num, listChatters):
         if _num < self.size():
-            user = self.__names[_num]
             message = listChatters.get(_num)
             listChatters.delete(_num)
             del self.__names[_num]
-            if message:
-                return message
-            return user
+            return message

@@ -7,6 +7,7 @@ from Read import getUser, getMessage, isCommand
 from UserList import UserList
 
 joinCmd = "!join"
+leavCmd = "!leave"
 pickCmd = "!pick"
 
 class Application():
@@ -30,6 +31,8 @@ class Application():
             if  message.startswith(joinCmd):
                 message = message.replace(joinCmd, '', 1)
                 self.addToList(getUser(line), message)
+            elif message.startswith(leavCmd):
+                self.__userList.removeUser(getUser(line), self.__gui.getChatBox())
             elif message.startswith(pickCmd) and getUser(line).lower() == self.__gui.getChnlStr().lower():
                 self.pickUser()
                 return

@@ -22,6 +22,7 @@ txtSettings = "Settings"
 txtHelloMode="Welcome Mode"
 txtJoinMode="Join Mode"
 txtJoinPick="Pick"
+txtNamePoolOpen="Name pool open! Type !join to join!"
 
 # tk helpers
 TXT = "text"

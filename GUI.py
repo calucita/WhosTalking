@@ -31,7 +31,7 @@ class GUI(Frame):
         if self.caller.isLoggingActiveJoin(True):
             self.StartJoin.config(relief=SKN)
             self.Stop.config(relief=RSD)
-            self.caller.sendMessage("Name pool open! Type !join to join!")
+            self.caller.sendMessage(txtNamePoolOpen)
 
     def onJoinPick(self):
         if self.caller.isLoggingActiveJoin():
@@ -65,7 +65,11 @@ class GUI(Frame):
         #print(self.OauthEntry.get())
         if self.OauthEntry.get() == '':
             oauth = TwitchOauth.TwitchOauth()
-            self.OauthEntry.insert(0, 'oauth:'+ oauth.authenticate())
+            val = oauth.authenticate()
+            if not val or val == "  ":
+                self.setConnecButton(False, 0, False)
+                return ""
+            self.OauthEntry.insert(0, 'oauth:'+ val)
         return self.OauthEntry.get()
 
     def getNameStr(self):
@@ -107,6 +111,7 @@ class GUI(Frame):
             else:
                 self.ConnectLabel[TXT]=txtNotConnd
                 self.ConnectLabel[FG]=RD
+                self.toggle_btn.config(relief=RSD, text=txtConnect)
     
     def isConnectActive(self):
         return self.toggle_btn.config(TXT)[-1] == txtDisconnect
