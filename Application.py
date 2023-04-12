@@ -28,12 +28,14 @@ class Application():
             self.addToList(getUser(line), getMessage(line))
         elif self.__logNamesJoin:
             message = getMessage(line)
-            if  message.startswith(joinCmd):
-                message = message.replace(joinCmd, '', 1)
-                self.addToList(getUser(line), message)
-            elif message.startswith(leavCmd):
-                self.__userList.removeUser(getUser(line), self.__gui.getChatBox())
-            elif message.startswith(pickCmd) and getUser(line).lower() == self.__gui.getChnlStr().lower():
+            user = getUser(line)
+            if  message.lower().startswith(joinCmd):
+                message = message[len(joinCmd):]
+                self.addToList(user, message)
+            elif message.lower().startswith(leavCmd):
+                self.__userList.removeUser(user, self.__gui.getChatBox())
+                self.sendMessage("@" + user + " has been removed from the pool")
+            elif message.lower().startswith(pickCmd) and user.lower() == self.__gui.getChnlStr().lower():
                 self.pickUser()
                 return
 
