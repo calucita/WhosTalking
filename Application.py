@@ -24,7 +24,10 @@ class Application(ObserverPattern.ObserverPattern, GUICallerInterface.GUICallerI
         self.__activityController = ActivityController.ActivityController(self.__gui)
 
     def processLine(self, line):
-        print(line, "?!")
+        if "PING :tmi.twitch.tv" in line:
+            self.sendMessage()
+            return
+
         if self.__activityController and self.__activityController.isActivityEnabled():
             self.callActivities(getUser(line), getMessage(line))
 
@@ -90,6 +93,16 @@ class Application(ObserverPattern.ObserverPattern, GUICallerInterface.GUICallerI
     def after(self, time, method):
         if self.__gui:
             self.__gui.after(time, method)
+
+    def chatCheck(self):
+        if self.isConnectionHealthy():
+            readbuffer = self.recvBuff()
+            if readbuffer:
+                temp = str.split(readbuffer, "\n")
+                readbuffer = temp.pop()
+                for line in temp:
+                    # print(line)
+                    self.processLine(line)
 
     def mainloop(self):
         if self.__gui:

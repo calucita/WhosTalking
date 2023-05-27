@@ -36,7 +36,6 @@ class ActivityController:
         return False
 
     def doAction(self, user: str, message: str) -> str:
-        print(user, message)
         if not self.__anyEnabled:
             return ""
         for act in self.__ActivityList:
