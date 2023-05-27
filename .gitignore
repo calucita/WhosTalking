@@ -5,3 +5,4 @@ build
 AppInfo.py
 *.ico
 *.pyproj
+.vscode/settings.json
