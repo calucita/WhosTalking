@@ -1,5 +1,4 @@
-class CommandControl(object): 
-
+class CommandBase(object):
     def Name(self):
         return __name__
 

@@ -1,5 +1,5 @@
 import time
-import Socket_local
+
 
 def joinRoom(s, expectedUser):
     readbuffer = ""
@@ -9,7 +9,7 @@ def joinRoom(s, expectedUser):
         temp = str.split(readbuffer, "\n")
         readbuffer = temp.pop()
         for line in temp:
-            #print(line)
+            # print(line)
             if "Login authentication failed" in line:
                 return 4
 
@@ -23,7 +23,7 @@ def joinRoom(s, expectedUser):
             if "failed" in line:
                 return 99
 
-            if ":End of /NAMES list" in line:                        
-				#s.sendMessage("I'm here! I'm calu's bot :3")
+            if ":End of /NAMES list" in line:
+                # s.sendMessage("I'm here! I'm calu's bot :3")
                 return 0
     return 2

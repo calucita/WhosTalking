@@ -1,14 +1,14 @@
-class CommandControlFactory():
-    __commandList = {}
+class CommandControlFactory:
+    __commandList: dict = {}
 
     def createControl(self, type):
         newControl = type.capitalize()
         return globals()[newControl]()
 
     def createFromCommand(self, command):
-        if __commandList.has_key(command):
-            return self.createControl(_commandList[command])
+        if command in self.__commandList:
+            return self.createControl(self.__commandList[command])
         return False
 
     def getAllCommands(self):
-        return __commandList.keys()
+        return self.__commandList.keys()

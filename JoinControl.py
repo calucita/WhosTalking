@@ -1,7 +1,7 @@
-import CommandControl
+import CommandBase
 
-class JoinControl(CommandControl): 
 
+class JoinControl(CommandBase.CommandBase):
     def doAction(self, user, message):
         pass
 
