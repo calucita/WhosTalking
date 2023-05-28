@@ -49,7 +49,7 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
 
     def onToggleConnection(self):
         if self.toggle_btn.cget(TXT) == txtDisconnect:
-            self.toggle_btn.configure(state=ON, text=txtConnect)
+            self.toggle_btn.configure(state=ON, fg_color=self.__defaultButtonColor, text=txtConnect)
             self.caller.setConnection(False)
         else:
             self.toggle_btn.configure(state=OFF, fg_color="gray", text=txtConnecting)
@@ -98,8 +98,7 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         if boolean:
             self.ConnectLabel.configure(text=txtConnd, text_color=BL)
             if fromConnection:
-                self.toggle_btn.configure(state=ON, fg_color=("#3B8ED0", "#1F6AA5"), text=txtDisconnect)
-                print("here")
+                self.toggle_btn.configure(state=ON, fg_color=self.__defaultButtonColor, text=txtDisconnect)
         else:
             if fromConnection:
                 # self.ChannelLabel.delete(0, END)
@@ -114,10 +113,10 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
                 if connected == 99:
                     self.ConnectLabel.configure(text=txtError, text_color=RD)
 
-                self.toggle_btn.configure(state=ON, fg_color=("#3B8ED0", "#1F6AA5"), text=txtConnect)
+                self.toggle_btn.configure(state=ON, fg_color=self.__defaultButtonColor, text=txtConnect)
             else:
                 self.ConnectLabel.configure(text=txtNotConnd, text_color=RD)
-                self.toggle_btn.configure(state=ON, fg_color=("#3B8ED0", "#1F6AA5"), text=txtConnect)
+                self.toggle_btn.configure(state=ON, fg_color=self.__defaultButtonColor, text=txtConnect)
 
     def isConnectActive(self):
         return self.toggle_btn.cget(TXT) == txtDisconnect
@@ -139,6 +138,7 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         self.OauthLabel = customtkinter.CTkLabel(self, text=txtAuth)
         self.ChannelLabel = customtkinter.CTkLabel(self, text=txtChannel)
         self.ConnectLabel = customtkinter.CTkLabel(self, text=txtNotConnd, text_color=RD, width=200)
+        self.ConnectLabel.cget("font").configure(size=14)
         self.ListLabel = customtkinter.CTkLabel(self, text=txtListChat)
         self.IgnoreLabel = customtkinter.CTkLabel(self, text=txtIgnore)
 
@@ -179,7 +179,7 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         self.toggle_btn = customtkinter.CTkButton(
             self, text=txtConnect, width=75, state=ON, command=self.onToggleConnection
         )
-        print(self.toggle_btn.cget("fg_color"))
+        self.__defaultButtonColor = self.toggle_btn.cget("fg_color")
 
     def create_list(self):
         self.ListChatters = ListBox_Custom.ListBox_Custom(self)
