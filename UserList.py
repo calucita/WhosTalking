@@ -20,7 +20,7 @@ class UserList:
                 listOfChatters = self.__listOfChatters.getChatBox()
                 if listOfChatters is None:
                     return ""
-                listOfChatters.insert(END, user + spaceString + message)
+                listOfChatters.add_item(user + spaceString + message)
                 self.__names.append(user)
                 fileVar = self.__listOfChatters.getSaveStr()
                 if fileVar and (not self.__saveFilevar or self.__saveFilevar != fileVar):

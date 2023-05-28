@@ -1,43 +1,42 @@
 from os import path
 import TwitchOauth
-import tkinter
+import customtkinter
 import ListBoxInterface
 import GUICallerInterface
-from tkinter import filedialog
+import ListBox_Custom
+from customtkinter import filedialog
 from DictLabel import *
 from Tools import Modes
 
 
-class GUI(tkinter.Frame, ListBoxInterface.ListBoxInterface):
-    def __init__(self, caller: GUICallerInterface.GUICallerInterface, master=None):
-        tkinter.Frame.__init__(self, master)
-        if not master:
-            raise Exception("something went worng with the GUI")
-        self.master = master
-        self.master.title(txtTitle)
-        self.master.geometry("350x450")
-        self.master.iconbitmap(path.join(path.dirname(__file__), "boticon.ico"))
+class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
+    def __init__(self, caller: GUICallerInterface.GUICallerInterface):
+        super().__init__()
+
+        self.title(txtTitle)
+        self.geometry("350x500")
+        self.iconbitmap(path.join(path.dirname(__file__), "boticon.ico"))
         self.create_widgets()
-        self.pack(side=tkinter.LEFT, fill="both", expand=True)
+        # self.pack(side="left", fill="both", expand=True)
         self.caller = caller
 
     def onStartHello(self):
         self.onStop()
         if self.caller.loggingActive(Modes.HELLO, True):
-            self.StartHello.config(relief=SKN)
-            self.Stop.config(relief=RSD)
+            self.StartHello.configure(state=OFF)
+            self.Stop.configure(state=ON)
 
     def onStop(self):
         self.caller.loggingActive(Modes.NONE, True)
-        self.StartHello.config(relief=RSD)
-        self.StartJoin.config(relief=RSD)
-        self.Stop.config(relief=SKN)
+        self.StartHello.configure(state=ON)
+        self.StartJoin.configure(state=ON)
+        self.Stop.configure(state=OFF)
 
     def onStartJoin(self):
         self.onStop()
         if self.caller.loggingActive(Modes.POOL, True):
-            self.StartJoin.config(relief=SKN)
-            self.Stop.config(relief=RSD)
+            self.StartJoin.configure(state=OFF)
+            self.Stop.configure(state=ON)
 
     def onJoinPick(self):
         if self.caller.loggingActive(Modes.POOL):
@@ -46,14 +45,15 @@ class GUI(tkinter.Frame, ListBoxInterface.ListBoxInterface):
     def onDelete(self):
         self.caller.deleteList()
         if self.ListChatters:
-            self.ListChatters.delete(0, END)
+            self.ListChatters.deleteAll()
 
     def onToggleConnection(self):
-        if self.toggle_btn.config(TXT)[-1] == txtDisconnect:
-            self.toggle_btn.config(relief=RSD, text=txtConnect)
+        if self.toggle_btn.cget(TXT) == txtDisconnect:
+            self.toggle_btn.configure(state=ON, text=txtConnect)
             self.caller.setConnection(False)
         else:
-            self.toggle_btn.config(relief=SKN, text=txtDisconnect)
+            self.toggle_btn.configure(state=OFF, fg_color="gray", text=txtConnecting)
+            self.update()
             self.caller.setConnection(True)
         self.onStop()
 
@@ -96,32 +96,31 @@ class GUI(tkinter.Frame, ListBoxInterface.ListBoxInterface):
 
     def setConnectButton(self, boolean=False, connected=0, fromConnection=False):
         if boolean:
-            self.ConnectLabel[TXT] = txtConnd
-            self.ConnectLabel[FG] = BL
+            self.ConnectLabel.configure(text=txtConnd, text_color=BL)
             if fromConnection:
-                self.toggle_btn.config(relief=RSD, text=txtDisconnect)
+                self.toggle_btn.configure(state=ON, fg_color=("#3B8ED0", "#1F6AA5"), text=txtDisconnect)
+                print("here")
         else:
             if fromConnection:
                 # self.ChannelLabel.delete(0, END)
                 if connected == 1:
-                    self.ConnectLabel[TXT] = txtErrorBot
+                    self.ConnectLabel.configure(text=txtErrorBot, text_color=RD)
                 if connected == 2:
-                    self.ConnectLabel[TXT] = txtErrorChannel
+                    self.ConnectLabel.configure(text=txtErrorChannel, text_color=RD)
                 if connected == 3:
-                    self.ConnectLabel[TXT] = txtErrorOauth
+                    self.ConnectLabel.configure(text=txtErrorOauth, text_color=RD)
                 if connected == 4:
-                    self.ConnectLabel[TXT] = txtErrorAuthenticationFailed
+                    self.ConnectLabel.configure(text=txtErrorAuthenticationFailed, text_color=RD)
                 if connected == 99:
-                    self.ConnectLabel[TXT] = txtError
+                    self.ConnectLabel.configure(text=txtError, text_color=RD)
 
-                self.toggle_btn.config(relief=RSD, text=txtConnect)
+                self.toggle_btn.configure(state=ON, fg_color=("#3B8ED0", "#1F6AA5"), text=txtConnect)
             else:
-                self.ConnectLabel[TXT] = txtNotConnd
-                self.ConnectLabel[FG] = RD
-                self.toggle_btn.config(relief=RSD, text=txtConnect)
+                self.ConnectLabel.configure(text=txtNotConnd, text_color=RD)
+                self.toggle_btn.configure(state=ON, fg_color=("#3B8ED0", "#1F6AA5"), text=txtConnect)
 
     def isConnectActive(self):
-        return self.toggle_btn.config(TXT)[-1] == txtDisconnect
+        return self.toggle_btn.cget(TXT) == txtDisconnect
 
     #############################################################
     ############ actual GUI stuff :P
@@ -136,89 +135,96 @@ class GUI(tkinter.Frame, ListBoxInterface.ListBoxInterface):
         self.set_possitions()
 
     def create_labels(self):
-        self.NameLabel = tkinter.Label(self, text=txtBot)
-        self.OauthLabel = tkinter.Label(self, text=txtAuth)
-        self.ChannelLabel = tkinter.Label(self, text=txtChannel)
-        self.ConnectLabel = tkinter.Label(self, text=txtNotConnd, fg=RD)
-        self.ListLabel = tkinter.Label(self, text=txtListChat)
-        self.IgnoreLabel = tkinter.Label(self, text=txtIgnore)
+        self.NameLabel = customtkinter.CTkLabel(self, text=txtBot)
+        self.OauthLabel = customtkinter.CTkLabel(self, text=txtAuth)
+        self.ChannelLabel = customtkinter.CTkLabel(self, text=txtChannel)
+        self.ConnectLabel = customtkinter.CTkLabel(self, text=txtNotConnd, text_color=RD, width=200)
+        self.ListLabel = customtkinter.CTkLabel(self, text=txtListChat)
+        self.IgnoreLabel = customtkinter.CTkLabel(self, text=txtIgnore)
 
     def create_entries(self):
-        self.NameEntry = tkinter.Entry(self, width=35)
-        self.OauthEntry = tkinter.Entry(self, width=35, show="*")
-        self.ChannelEntry = tkinter.Entry(self, width=35)
-        self.IgnoreEntry = tkinter.Entry(self, width=35)
+        self.NameEntry = customtkinter.CTkEntry(self, width=250)
+        self.OauthEntry = customtkinter.CTkEntry(self, width=250, show="*")
+        self.ChannelEntry = customtkinter.CTkEntry(self, width=250)
+        self.IgnoreEntry = customtkinter.CTkEntry(self, width=250)
 
     def create_buttons(self):
-        self.ButtonFrame = tkinter.Frame(self, height=40)
-        ## self.settingsButton = tkinter.Button(self.ButtonFrame, width=12, text=txtSettings)
-        self.Clear = tkinter.Button(self.ButtonFrame, width=5, text=txtClear, command=self.onDelete)
-        self.Stop = tkinter.Button(self.ButtonFrame, width=5, text=txtStop, command=self.onStop)
+        self.ButtonFrame = customtkinter.CTkFrame(self, fg_color=self.cget("fg_color"))
+        ## self.settingsButton = customtkinter.CTkButton(self.ButtonFrame, width=12, text=txtSettings)
+        self.Clear = customtkinter.CTkButton(self.ButtonFrame, width=75, text=txtClear, command=self.onDelete)
+        self.Stop = customtkinter.CTkButton(self.ButtonFrame, width=75, text=txtStop, command=self.onStop)
 
-        self.HelloMode = tkinter.Label(self.ButtonFrame, text=txtHelloMode)
-        self.StartHello = tkinter.Button(self.ButtonFrame, width=5, text=txtStart, command=self.onStartHello)
+        self.HelloMode = customtkinter.CTkLabel(self.ButtonFrame, text=txtHelloMode)
+        self.StartHello = customtkinter.CTkButton(self.ButtonFrame, width=75, text=txtStart, command=self.onStartHello)
 
-        self.JoinMode = tkinter.Label(self.ButtonFrame, text=txtJoinMode)
-        self.StartJoin = tkinter.Button(self.ButtonFrame, width=5, text=txtStart, command=self.onStartJoin)
-        self.JoinPick = tkinter.Button(self.ButtonFrame, width=5, text=txtJoinPick, command=self.onJoinPick)
+        self.JoinMode = customtkinter.CTkLabel(self.ButtonFrame, text=txtJoinMode)
+        self.StartJoin = customtkinter.CTkButton(self.ButtonFrame, width=75, text=txtStart, command=self.onStartJoin)
+        self.JoinPick = customtkinter.CTkButton(self.ButtonFrame, width=75, text=txtJoinPick, command=self.onJoinPick)
 
         # Location within the frame
         ## self.settingsButton.grid(column=1, row=1, sticky=N, pady=(0,50))
-        self.Clear.grid(column=1, row=2, sticky=tkinter.S)
-        self.Stop.grid(column=1, row=3, sticky=tkinter.S)
+        self.Clear.grid(column=1, row=2, sticky="s")
+        self.Stop.grid(column=1, row=3, sticky="s")
 
-        self.HelloMode.grid(column=1, row=6, sticky=tkinter.S)
-        self.StartHello.grid(column=1, row=7, sticky=tkinter.S)
-        self.ButtonFrame.grid_rowconfigure(6, minsize=40)
+        self.HelloMode.grid(column=1, row=6, sticky="s")
+        self.StartHello.grid(column=1, row=7, sticky="s")
+        self.ButtonFrame.grid_rowconfigure(6, minsize=75)
 
-        self.JoinMode.grid(column=1, row=9, sticky=tkinter.S)
-        self.StartJoin.grid(column=1, row=10, sticky=tkinter.S)
-        self.JoinPick.grid(column=1, row=11, sticky=tkinter.S)
-        self.ButtonFrame.grid_rowconfigure(9, minsize=40)
+        self.JoinMode.grid(column=1, row=9, sticky="s")
+        self.StartJoin.grid(column=1, row=10, sticky="s")
+        self.JoinPick.grid(column=1, row=11, sticky="s")
+        self.ButtonFrame.grid_rowconfigure(9, minsize=75)
 
     def create_toggle(self):
-        self.toggle_btn = tkinter.Button(self, text=txtConnect, width=12, relief=RSD, command=self.onToggleConnection)
+        self.toggle_btn = customtkinter.CTkButton(
+            self, text=txtConnect, width=75, state=ON, command=self.onToggleConnection
+        )
+        print(self.toggle_btn.cget("fg_color"))
 
     def create_list(self):
-        self.scrollbar = tkinter.Scrollbar(self)
-        self.ListChatters = tkinter.Listbox(self, height=12, yscrollcommand=self.scrollbar.set, font=("Helvatica", 12))
-        self.scrollbar.config(command=self.ListChatters.yview)
+        self.ListChatters = ListBox_Custom.ListBox_Custom(self)
 
     def create_save(self):
-        self.SaveFrame = tkinter.Frame(self)
-        self.SaveLabel = tkinter.Label(self.SaveFrame, text=txtSave)
-        self.saveFileVar = tkinter.IntVar()
-        self.SaveCheck = tkinter.Checkbutton(self.SaveFrame, variable=self.saveFileVar)
-        self.SaveEntry = tkinter.Entry(self, width=35)
-        self.SaveSearch = tkinter.Button(self, width=1, text="...", command=self.onSearch)
+        self.SaveFrame = customtkinter.CTkFrame(self, fg_color=self.cget("fg_color"))
+        self.SaveLabel = customtkinter.CTkLabel(self.SaveFrame, text=txtSave, padx=15)
+        # todo: uhmm... what?
+        self.saveFileVar = customtkinter.IntVar()
+        self.SaveCheck = customtkinter.CTkCheckBox(self.SaveFrame, variable=self.saveFileVar, text="", width=10)
+        self.SaveEntry = customtkinter.CTkEntry(self, width=35)
+        self.SaveSearch = customtkinter.CTkButton(self, width=1, text="...", command=self.onSearch)
         self.SaveLabel.grid(column=1, row=1)
-        self.SaveCheck.grid(column=2, row=1)
+        self.SaveCheck.grid(column=2, row=1, sticky="e")
 
     def set_possitions(self):
         # Column 1
-        self.NameLabel.grid(column=1, row=1, sticky=tkinter.W, padx=15)
-        self.OauthLabel.grid(column=1, row=2, sticky=tkinter.W, padx=15)
-        self.ChannelLabel.grid(column=1, row=3, sticky=tkinter.W, padx=15)
-        self.toggle_btn.grid(column=1, row=5)
+        self.NameLabel.grid(column=1, row=1, sticky="w", padx=5)
+        self.OauthLabel.grid(column=1, row=2, sticky="w", padx=5)
+        self.ChannelLabel.grid(column=1, row=3, sticky="w", padx=5)
+        self.toggle_btn.grid(column=1, row=5, pady=20)
 
-        self.ButtonFrame.grid(column=1, row=6, sticky=tkinter.N, pady=30)
+        self.ButtonFrame.grid(column=1, row=6)
         self.IgnoreLabel.grid(column=1, row=7)
         self.SaveFrame.grid(column=1, row=8)
 
         # Column 2
-        self.NameEntry.grid(column=2, row=1, sticky=tkinter.W)
-        self.OauthEntry.grid(column=2, row=2, sticky=tkinter.W)
-        self.ChannelEntry.grid(column=2, row=3, sticky=tkinter.W)
-        self.ConnectLabel.grid(column=2, row=5)
+        self.NameEntry.grid(column=2, row=1, sticky="w", columnspan=2, padx=5)
+        self.OauthEntry.grid(column=2, row=2, sticky="w", columnspan=2, padx=5)
+        self.ChannelEntry.grid(column=2, row=3, sticky="w", columnspan=2, padx=5)
+        self.ConnectLabel.grid(column=2, row=5, sticky="w", pady=20)
         self.ListLabel.grid(column=2, row=6)
 
         self.rowconfigure(6, weight=1)
         self.columnconfigure(2, weight=1)
         if self.ListChatters:
-            self.ListChatters.grid(column=2, row=6, sticky=tkinter.W + tkinter.E + tkinter.N + tkinter.S)
-        self.IgnoreEntry.grid(column=2, row=7, sticky=tkinter.W + tkinter.E)
-        self.SaveEntry.grid(column=2, row=8, sticky=tkinter.W + tkinter.E, pady=10)
+            self.ListChatters.grid(
+                column=2,
+                row=6,
+                columnspan=2,
+                padx=5,
+                sticky="w" + "e" + "n" + "s",
+            )
+        self.IgnoreEntry.grid(column=2, row=7, sticky="w" + "e", columnspan=2, padx=5, pady=5)
+        self.SaveEntry.grid(column=2, row=8, sticky="w" + "e", pady=5)
 
         # Column 3
-        self.scrollbar.grid(column=3, row=6, sticky=tkinter.N + tkinter.S)
-        self.SaveSearch.grid(column=3, row=8)
+        self.SaveSearch.grid(column=3, row=8, padx=5)

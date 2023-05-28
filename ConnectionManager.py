@@ -13,15 +13,26 @@ class ConnectionManager:
         self.__observer = observer
 
     def connectSocket(self, _name: str = "", _channel: str = "", _oauth: str = "") -> None:
-        if not self.__connected:
-            if self.__socket is None:
-                self.__socket = Socket_local.Socket_local()
-            if _oauth and _name and _channel:
-                self.__socket.openSocket(str(_oauth), str(_name), str(_channel))
-                connectionError = self.joinRoom(_name)
-                if connectionError:
-                    self.__socket = None
+        connectionError = 2
+        for i in range(3):
+            connectionError = self.__retriableConnect(_name, _channel, _oauth)
+            if not connectionError:
                 self.isConnected(connectionError == 0, True, connectionError)
+                return
+        self.isConnected(connectionError == 0, True, connectionError)
+
+    def __retriableConnect(self, _name: str = "", _channel: str = "", _oauth: str = "") -> int:
+        if self.__connected:
+            return 0
+        if self.__socket is None:
+            self.__socket = Socket_local.Socket_local()
+        if _oauth and _name and _channel:
+            self.__socket.openSocket(str(_oauth), str(_name), str(_channel))
+            connectionError = self.joinRoom(_name)
+            if connectionError:
+                self.__socket = None
+            return connectionError
+        return 2
 
     def isConnected(self, status: typing.Union[bool, None] = None, fromConnection=False, errorCode=0) -> bool:
         if status is not None:

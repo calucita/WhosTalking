@@ -5,20 +5,15 @@ import ConnectionManager
 import ObserverPattern
 import ActivityController
 import GUICallerInterface
-from tkinter import Tk
 from Tools import Modes
 from Read import getUser, getMessage
-
-joinCmd = "!join"
-leavCmd = "!leave"
-pickCmd = "!pick"
 
 
 class Application(ObserverPattern.ObserverPattern, GUICallerInterface.GUICallerInterface):
     __activityController: typing.Union[ActivityController.ActivityController, None]
 
     def __init__(self):
-        self.__gui = GUI.GUI(self, Tk())
+        self.__gui = GUI.GUI(self)
         Settings.loadCredentials(self.__gui)
         self.__ConnectionManager = ConnectionManager.ConnectionManager(self)
         self.__activityController = ActivityController.ActivityController(self.__gui)
