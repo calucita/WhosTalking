@@ -3,6 +3,7 @@ import Tools
 import HelloActivity
 import PoolActivity
 import ListBoxInterface
+import typing
 
 
 class ActivityController:
@@ -17,13 +18,13 @@ class ActivityController:
         }
         self.__anyEnabled = False
 
-    def selectActivity(self, _activity: Tools.Modes) -> str:
+    def selectActivity(self, _activity: Tools.Modes, _activityBool: bool = False) -> str:
         for act in self.__ActivityList:
             self.__ActivityList[act].disable()
 
         if _activity in self.__ActivityList:
             self.__anyEnabled = True
-            return self.__ActivityList[_activity].enable()
+            return self.__ActivityList[_activity].enable(_activityBool)
         else:
             self.__anyEnabled = False
         return ""
@@ -35,12 +36,20 @@ class ActivityController:
             return self.__ActivityList[_activity].isActive()
         return False
 
-    def doAction(self, user: str, message: str) -> str:
+    def doAction(self, user: str, message: str) -> typing.Union[str, bool]:
         if not self.__anyEnabled:
             return ""
         for act in self.__ActivityList:
             if self.__ActivityList[act].isActive():
                 return self.__ActivityList[act].doCommand(user, message)
+        return ""
+
+    def doTidyUp(self, _activityBool: bool = False) -> str:
+        if not self.__anyEnabled:
+            return ""
+        for act in self.__ActivityList:
+            if self.__ActivityList[act].isActive():
+                return self.__ActivityList[act].doTidyUp(_activityBool)
         return ""
 
     def deleteList(self) -> None:

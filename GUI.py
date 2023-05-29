@@ -155,25 +155,31 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         self.Stop = customtkinter.CTkButton(self.ButtonFrame, width=75, text=txtStop, command=self.onStop)
 
         self.HelloMode = customtkinter.CTkLabel(self.ButtonFrame, text=txtHelloMode)
+        self.HelloMode.cget("font").configure(size=14)
         self.StartHello = customtkinter.CTkButton(self.ButtonFrame, width=75, text=txtStart, command=self.onStartHello)
 
-        self.JoinMode = customtkinter.CTkLabel(self.ButtonFrame, text=txtJoinMode)
+        self.JoinMode = customtkinter.CTkLabel(self.ButtonFrame, text=txtJoinMode, padx=35)
+        self.JoinMode.cget("font").configure(size=14)
+        self.JoinReplyVar = customtkinter.IntVar()
+        self.JoinReply = customtkinter.CTkCheckBox(
+            self.ButtonFrame, width=75, text="Reply", variable=self.JoinReplyVar
+        )
         self.StartJoin = customtkinter.CTkButton(self.ButtonFrame, width=75, text=txtStart, command=self.onStartJoin)
         self.JoinPick = customtkinter.CTkButton(self.ButtonFrame, width=75, text=txtJoinPick, command=self.onJoinPick)
 
         # Location within the frame
-        ## self.settingsButton.grid(column=1, row=1, sticky=N, pady=(0,50))
         self.Clear.grid(column=1, row=2, sticky="s")
         self.Stop.grid(column=1, row=3, sticky="s")
 
         self.HelloMode.grid(column=1, row=6, sticky="s")
         self.StartHello.grid(column=1, row=7, sticky="s")
-        self.ButtonFrame.grid_rowconfigure(6, minsize=75)
+        self.ButtonFrame.grid_rowconfigure(6, minsize=50)
 
         self.JoinMode.grid(column=1, row=9, sticky="s")
-        self.StartJoin.grid(column=1, row=10, sticky="s")
-        self.JoinPick.grid(column=1, row=11, sticky="s")
-        self.ButtonFrame.grid_rowconfigure(9, minsize=75)
+        self.JoinReply.grid(column=1, row=10, sticky="s")
+        self.StartJoin.grid(column=1, row=11, sticky="s")
+        self.JoinPick.grid(column=1, row=12, sticky="s")
+        self.ButtonFrame.grid_rowconfigure(9, minsize=50)
 
     def create_toggle(self):
         self.toggle_btn = customtkinter.CTkButton(
@@ -197,12 +203,12 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
 
     def set_possitions(self):
         # Column 1
-        self.NameLabel.grid(column=1, row=1, sticky="w", padx=5)
-        self.OauthLabel.grid(column=1, row=2, sticky="w", padx=5)
-        self.ChannelLabel.grid(column=1, row=3, sticky="w", padx=5)
+        self.NameLabel.grid(column=1, row=1, sticky="w", padx=10)
+        self.OauthLabel.grid(column=1, row=2, sticky="w", padx=10)
+        self.ChannelLabel.grid(column=1, row=3, sticky="w", padx=10)
         self.toggle_btn.grid(column=1, row=5, pady=20)
 
-        self.ButtonFrame.grid(column=1, row=6)
+        self.ButtonFrame.grid(column=1, row=6, sticky="n")
         self.IgnoreLabel.grid(column=1, row=7)
         self.SaveFrame.grid(column=1, row=8)
 

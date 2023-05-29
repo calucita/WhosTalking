@@ -18,33 +18,49 @@ class Application(ObserverPattern.ObserverPattern, GUICallerInterface.GUICallerI
         self.__ConnectionManager = ConnectionManager.ConnectionManager(self)
         self.__activityController = ActivityController.ActivityController(self.__gui)
 
-    def processLine(self, line):
+    def processLine(self, line) -> bool:
         if "PING :tmi.twitch.tv" in line:
             self.sendMessage()
-            return
+            return False
 
         if self.__activityController and self.__activityController.isActivityEnabled():
-            self.callActivities(getUser(line), getMessage(line))
+            reply = self.callActivities(getUser(line), getMessage(line))
 
             if Settings.getSaveFileFromKey() != self.__gui.getSaveStr():
                 Settings.saveFileInKey(self.__gui.getSaveStr())
 
+            return reply
+        return False
+
     def pickUser(self):
         self.callActivities(str(self.__gui.getChnlStr()), "!pick")
 
-    def callActivities(self, user, message):
+    def callActivities(self, user, message) -> bool:
         if not self.__activityController:
-            return
+            return False
         reply = self.__activityController.doAction(user, message)
 
-        if reply:
+        if isinstance(reply, str):
             self.sendMessage(reply)
+            return True
+        if reply == True:
+            return True
+        return False
 
     def sendMessage(self, message=None):
         if not message:
             self.__ConnectionManager.sendMessage()
         else:
             self.__ConnectionManager.sendMessage(message, self.__gui.getChnlStr())
+
+    def callTidyUpActivities(self):
+        if not self.__activityController:
+            return
+        # this will need refactoring... since more vars may be needed in the future and/or for generalization
+        reply = self.__activityController.doTidyUp(self.__gui.JoinReplyVar.get() == 1)
+
+        if reply:
+            self.sendMessage(reply)
 
     def recvBuff(self):
         return self.__ConnectionManager.recvBuff()
@@ -94,13 +110,16 @@ class Application(ObserverPattern.ObserverPattern, GUICallerInterface.GUICallerI
 
     def chatCheck(self):
         if self.isConnectionHealthy():
+            lineReply = False
             readbuffer = self.recvBuff()
             if readbuffer:
                 temp = str.split(readbuffer, "\n")
                 readbuffer = temp.pop()
                 for line in temp:
                     # print(line)
-                    self.processLine(line)
+                    lineReply = self.processLine(line)
+            if not readbuffer or not lineReply:
+                self.callTidyUpActivities()
 
     def mainloop(self):
         if self.__gui:
