@@ -32,6 +32,6 @@ class ListBox_Custom(customtkinter.CTkScrollableFrame):
         return self._list[index].cget("text")
 
     def deleteAll(self):
-        for label in self._list:
+        while self._list:
+            label = self._list.pop()
             label.destroy()
-            self._list.remove(label)

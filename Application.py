@@ -26,6 +26,9 @@ class Application(ObserverPattern.ObserverPattern, GUICallerInterface.GUICallerI
         if self.__activityController and self.__activityController.isActivityEnabled():
             self.callActivities(getUser(line), getMessage(line))
 
+            if Settings.getSaveFileFromKey() != self.__gui.getSaveStr():
+                Settings.saveFileInKey(self.__gui.getSaveStr())
+
     def pickUser(self):
         self.callActivities(str(self.__gui.getChnlStr()), "!pick")
 
