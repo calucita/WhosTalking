@@ -33,3 +33,6 @@ RD = "red"
 BL = "blue"
 ON = "normal"
 OFF = "disabled"
+
+DAY = "💡"
+NIGHT = "🌙"

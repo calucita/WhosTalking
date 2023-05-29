@@ -14,7 +14,7 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         super().__init__()
 
         self.title(txtTitle)
-        self.geometry("350x500")
+        self.geometry("400x550")
         self.iconbitmap(path.join(path.dirname(__file__), "boticon.ico"))
         self.create_widgets()
         # self.pack(side="left", fill="both", expand=True)
@@ -124,6 +124,15 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
     def isFileSaveActive(self) -> bool:
         return self.saveFileVar.get() == 1
 
+    def onDayNight(self) -> None:
+        if customtkinter.get_appearance_mode() == "Light":
+            customtkinter.set_appearance_mode("dark")
+            self.DayNightButton.configure(text=DAY)
+        else:
+            customtkinter.set_appearance_mode("light")
+            self.DayNightButton.configure(text=NIGHT)
+        self.update()
+
     #############################################################
     ############ actual GUI stuff :P
 
@@ -152,6 +161,13 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         self.IgnoreEntry = customtkinter.CTkEntry(self, width=250)
 
     def create_buttons(self):
+        symbol = ""
+        if customtkinter.get_appearance_mode() == "light":
+            symbol = NIGHT
+        else:
+            symbol = DAY
+        self.DayNightButton = customtkinter.CTkButton(self, width=10, text=symbol, command=self.onDayNight)
+
         self.ButtonFrame = customtkinter.CTkFrame(self, fg_color=self.cget("fg_color"))
         ## self.settingsButton = customtkinter.CTkButton(self.ButtonFrame, width=12, text=txtSettings)
         self.Clear = customtkinter.CTkButton(self.ButtonFrame, width=75, text=txtClear, command=self.onDelete)
@@ -199,41 +215,44 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         # todo: uhmm... what?
         self.saveFileVar = customtkinter.IntVar()
         self.SaveCheck = customtkinter.CTkCheckBox(self.SaveFrame, variable=self.saveFileVar, text="", width=10)
-        self.SaveEntry = customtkinter.CTkEntry(self, width=35)
+        self.SaveEntry = customtkinter.CTkEntry(self)
         self.SaveSearch = customtkinter.CTkButton(self, width=1, text="...", command=self.onSearch)
         self.SaveLabel.grid(column=1, row=1)
         self.SaveCheck.grid(column=2, row=1, sticky="e")
 
     def set_possitions(self):
         # Column 1
-        self.NameLabel.grid(column=1, row=1, sticky="w", padx=10)
-        self.OauthLabel.grid(column=1, row=2, sticky="w", padx=10)
-        self.ChannelLabel.grid(column=1, row=3, sticky="w", padx=10)
-        self.toggle_btn.grid(column=1, row=5, pady=20)
+        self.columnconfigure(1, weight=0)
+        self.NameLabel.grid(column=1, row=2, sticky="w", padx=10)
+        self.OauthLabel.grid(column=1, row=3, sticky="w", padx=10)
+        self.ChannelLabel.grid(column=1, row=4, sticky="w", padx=10)
+        self.toggle_btn.grid(column=1, row=6, pady=20)
 
-        self.ButtonFrame.grid(column=1, row=6, sticky="n")
-        self.IgnoreLabel.grid(column=1, row=7)
-        self.SaveFrame.grid(column=1, row=8)
+        self.ButtonFrame.grid(column=1, row=7, sticky="n")
+        self.IgnoreLabel.grid(column=1, row=8)
+        self.SaveFrame.grid(column=1, row=9)
 
         # Column 2
-        self.NameEntry.grid(column=2, row=1, sticky="w", columnspan=2, padx=5)
-        self.OauthEntry.grid(column=2, row=2, sticky="w", columnspan=2, padx=5)
-        self.ChannelEntry.grid(column=2, row=3, sticky="w", columnspan=2, padx=5)
-        self.ConnectLabel.grid(column=2, row=5, sticky="w", pady=20)
-        self.ListLabel.grid(column=2, row=6)
-
-        self.rowconfigure(6, weight=1)
         self.columnconfigure(2, weight=1)
+        self.NameEntry.grid(column=2, row=2, sticky="w", columnspan=2, padx=5)
+        self.OauthEntry.grid(column=2, row=3, sticky="w", columnspan=2, padx=5)
+        self.ChannelEntry.grid(column=2, row=4, sticky="w", columnspan=2, padx=5)
+        self.ConnectLabel.grid(column=2, row=6, sticky="w", pady=20)
+        self.ListLabel.grid(column=2, row=7)
+
+        self.rowconfigure(7, weight=1)
         if self.ListChatters:
             self.ListChatters.grid(
                 column=2,
-                row=6,
+                row=7,
                 columnspan=2,
                 padx=5,
                 sticky="w" + "e" + "n" + "s",
             )
-        self.IgnoreEntry.grid(column=2, row=7, sticky="w" + "e", columnspan=2, padx=5, pady=5)
-        self.SaveEntry.grid(column=2, row=8, sticky="w" + "e", pady=5)
+        self.IgnoreEntry.grid(column=2, row=8, sticky="w" + "e", columnspan=2, padx=5, pady=5)
+        self.SaveEntry.grid(column=2, row=9, sticky="w" + "e", pady=5)
 
         # Column 3
-        self.SaveSearch.grid(column=3, row=8, padx=5)
+        self.columnconfigure(3, weight=0)
+        self.DayNightButton.grid(column=3, row=1, padx=5, pady=5, sticky="e")
+        self.SaveSearch.grid(column=3, row=9, padx=5, sticky="e")
