@@ -12,16 +12,16 @@ class ActivityBase:
         self._enabled = False
         self._UserList = _chatBox
 
-    def enable(self, _activityBool: bool = False) -> str:
+    def enable(self, **kwargs) -> str:
         """
         Enables the activity
         _activityBool: argument for the activity.
         returns: reply to chat.
         """
         self._enabled = True
-        return self.doOnEnable(_activityBool)
+        return self.doOnEnable(**kwargs)
 
-    def doOnEnable(self, _activityBool: bool = False) -> str:
+    def doOnEnable(self, **kwargs) -> str:
         return ""
 
     def disable(self):
@@ -37,7 +37,7 @@ class ActivityBase:
 
         return ""
 
-    def doTidyUp(self, _activityBool: bool = False) -> str:
+    def doTidyUp(self, **kwargs) -> str:
         """Wraps up any pending tasks"""
         return ""
 

@@ -16,3 +16,6 @@ class ListBoxInterface:
 
     def getChnlStr(self) -> str:
         return ""
+
+    def isFileSaveActive(self) -> bool:
+        return False

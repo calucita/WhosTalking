@@ -56,8 +56,7 @@ class Application(ObserverPattern.ObserverPattern, GUICallerInterface.GUICallerI
     def callTidyUpActivities(self):
         if not self.__activityController:
             return
-        # this will need refactoring... since more vars may be needed in the future and/or for generalization
-        reply = self.__activityController.doTidyUp(self.__gui.JoinReplyVar.get() == 1)
+        reply = self.__activityController.doTidyUp(confirm_entry=(self.__gui.JoinReplyVar.get() == 1))
 
         if reply:
             self.sendMessage(reply)
@@ -81,7 +80,9 @@ class Application(ObserverPattern.ObserverPattern, GUICallerInterface.GUICallerI
                 self.__activityController.selectActivity(Modes.NONE)
                 return False
             else:
-                reply = self.__activityController.selectActivity(mode)
+                reply = self.__activityController.selectActivity(
+                    mode, confirm_entry=(self.__gui.JoinReplyVar.get() == 1)
+                )
                 if reply:
                     self.sendMessage(reply)
                 if boolean:

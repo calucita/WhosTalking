@@ -22,27 +22,28 @@ class UserList:
                     return ""
                 listOfChatters.add_item(user + spaceString + message)
                 self.__names.append(user)
-                fileVar = self.__listOfChatters.getSaveStr()
-                if fileVar and (not self.__saveFilevar or self.__saveFilevar != fileVar):
-                    self.__saveFilevar = fileVar
-                if self.__saveFilevar:
-                    if len(self.__names) == 1:
+                if self.__listOfChatters.isFileSaveActive():
+                    fileVar = self.__listOfChatters.getSaveStr()
+                    if fileVar and (not self.__saveFilevar or self.__saveFilevar != fileVar):
+                        self.__saveFilevar = fileVar
+                    if self.__saveFilevar:
+                        if len(self.__names) == 1:
+                            try:
+                                os.remove(self.__saveFilevar)
+                            except:
+                                pass
                         try:
-                            os.remove(self.__saveFilevar)
+                            recordFile = ""
+                            if os.path.isfile(self.__saveFilevar):
+                                recordFile = open(self.__saveFilevar, "a")
+                            elif self.__saveFilevar:
+                                recordFile = open(self.__saveFilevar, "w")
+
+                            if recordFile:
+                                recordFile.write(user + "\n")
+                                recordFile.close()
                         except:
                             pass
-                    try:
-                        recordFile = ""
-                        if os.path.isfile(self.__saveFilevar):
-                            recordFile = open(self.__saveFilevar, "a")
-                        elif self.__saveFilevar:
-                            recordFile = open(self.__saveFilevar, "w")
-
-                        if recordFile:
-                            recordFile.write(user + "\n")
-                            recordFile.close()
-                    except:
-                        pass
         return ""
 
     def deleteList(self):

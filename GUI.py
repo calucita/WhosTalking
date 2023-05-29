@@ -121,6 +121,9 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
     def isConnectActive(self):
         return self.toggle_btn.cget(TXT) == txtDisconnect
 
+    def isFileSaveActive(self) -> bool:
+        return self.saveFileVar.get() == 1
+
     #############################################################
     ############ actual GUI stuff :P
 

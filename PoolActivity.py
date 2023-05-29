@@ -16,14 +16,17 @@ class PoolActivity(ActivityBase.ActivityBase):
         self.__pendingConfirmationsList = []
         self.__tidyCounter = 0
 
-    def doOnEnable(self, _activityBool: bool = False) -> str:
-        self.__confirmEntry = _activityBool
+    def doOnEnable(self, **kwargs) -> str:
+        if "confirm_entry" in kwargs:
+            self.__confirmEntry = kwargs.pop("confirm_entry")
         self.__tidyCounter = 0
         return self.__announcement
 
-    def doTidyUp(self, _activityBool: bool = False) -> str:
+    def doTidyUp(self, **kwargs) -> str:
         """Wraps up any pending tasks"""
-        self.__confirmEntry = _activityBool
+        if "confirm_entry" in kwargs:
+            self.__confirmEntry = kwargs.pop("confirm_entry")
+
         if not len(self.__pendingConfirmationsList):
             return ""
         if not self.__confirmEntry:
