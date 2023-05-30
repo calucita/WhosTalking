@@ -71,23 +71,22 @@ class Application(ObserverPattern.ObserverPattern, GUICallerInterface.GUICallerI
         if not self.__activityController:
             return False
         if boolean is not None:
-            # Only disable the activity if the selected one is enabled
+            # Disable all activities when there is no connection, the stop is set for the active mode, or None is selected
             if (
-                not boolean
-                and (not self.isConnectionHealthy() or self.__activityController.isActivityEnabled(mode))
+                not self.isConnectionHealthy()
+                or (not boolean and self.__activityController.isActivityEnabled(mode))
                 or (mode == Modes.NONE and boolean)
             ):
                 self.__activityController.selectActivity(Modes.NONE)
                 return False
-            else:
+            if boolean:
                 reply = self.__activityController.selectActivity(
                     mode, confirm_entry=(self.__gui.JoinReplyVar.get() == 1)
                 )
                 if reply:
                     self.sendMessage(reply)
-                if boolean:
-                    if Settings.getSaveFileFromKey() != self.__gui.getSaveStr():
-                        Settings.saveFileInKey(self.__gui.getSaveStr())
+                if Settings.getSaveFileFromKey() != self.__gui.getSaveStr():
+                    Settings.saveFileInKey(self.__gui.getSaveStr())
 
         return self.__activityController.isActivityEnabled(mode)
 
