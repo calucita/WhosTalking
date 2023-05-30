@@ -119,7 +119,7 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
                 self.toggle_btn.configure(state=ON, fg_color=self.__defaultButtonColor, text=txtConnect)
 
     def isConnectActive(self):
-        return self.toggle_btn.cget(TXT) == txtDisconnect
+        return self.ConnectLabel.cget(TXT) == txtConnd
 
     def isFileSaveActive(self) -> bool:
         return self.saveFileVar.get() == 1

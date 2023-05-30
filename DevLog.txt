@@ -1,11 +1,15 @@
+#####Dev log 30/05/2023:
+added confirm entries check box
+cleaned up some of the code.
+added light & dark themes, with lisbox alternating shades
+cleaned up unused code.
+
 #####Dev log 29/05/2023:
 Changed the GUI to use customtkinter. It is very similar to tkinter but some of the apis are ever so slightly different
 created activities (and commands). Activities are on-going events. as opposed to one time event commands. 
 ## PENDING
 Feature request to confirm entries for !join/pool mode.
 Make the list have light lines or different colors for easy of reading
-⚙️
-
 
 ## nice to haves
 Commands to change from light to dark mode
