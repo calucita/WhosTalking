@@ -45,6 +45,7 @@ the code is fugly as heck. I know. shhhhhhh
 - keyrings.alt
 - aiohttp
 - requests
+- customtkinter
 
 ## Others
 You will need to create an AppInfo.py file with the Url and Client Ids as registered in your twitch developers page. 
