@@ -4,9 +4,11 @@ import customtkinter
 import ListBoxInterface
 import GUICallerInterface
 import ListBox_Custom
+import configparser
 from customtkinter import filedialog
 from DictLabel import *
 from Tools import Modes
+from PIL import Image
 
 
 class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
@@ -17,26 +19,33 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         self.geometry("400x550")
         self.iconbitmap(path.join(path.dirname(__file__), "boticon.ico"))
         self.create_widgets()
+        self.load_setting()
         # self.pack(side="left", fill="both", expand=True)
         self.caller = caller
 
     def onStartHello(self):
         self.onStop()
         if self.caller.loggingActive(Modes.HELLO, True):
-            self.StartHello.configure(state=OFF)
-            self.Stop.configure(state=ON)
+            self.StartHello.configure(state=OFF, fg_color="gray")
+            self.StopJoin.configure(state=ON, fg_color=self.__defaultButtonColor)
+            self.StopHello.configure(state=ON, fg_color=self.__defaultButtonColor)
+            self.update()
 
     def onStop(self):
         self.caller.loggingActive(Modes.NONE, True)
-        self.StartHello.configure(state=ON)
-        self.StartJoin.configure(state=ON)
-        self.Stop.configure(state=OFF)
+        self.StartHello.configure(state=ON, fg_color=self.__defaultButtonColor)
+        self.StartJoin.configure(state=ON, fg_color=self.__defaultButtonColor)
+        self.StopJoin.configure(state=OFF, fg_color="gray")
+        self.StopHello.configure(state=OFF, fg_color="gray")
+        self.update()
 
     def onStartJoin(self):
         self.onStop()
         if self.caller.loggingActive(Modes.POOL, True):
-            self.StartJoin.configure(state=OFF)
-            self.Stop.configure(state=ON)
+            self.StartJoin.configure(state=OFF, fg_color="gray")
+            self.StopJoin.configure(state=ON, fg_color=self.__defaultButtonColor)
+            self.StopHello.configure(state=ON, fg_color=self.__defaultButtonColor)
+            self.update()
 
     def onJoinPick(self):
         if self.caller.loggingActive(Modes.POOL):
@@ -127,11 +136,52 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
     def onDayNight(self) -> None:
         if customtkinter.get_appearance_mode() == "Light":
             customtkinter.set_appearance_mode("dark")
-            self.DayNightButton.configure(text=DAY)
+            self.DayNightButton.configure(image=self.DayImage)
         else:
             customtkinter.set_appearance_mode("light")
-            self.DayNightButton.configure(text=NIGHT)
+            self.DayNightButton.configure(image=self.NightImage)
         self.update()
+
+    def onPlus(self) -> None:
+        self.changeFontSize(True)
+
+    def onMinus(self) -> None:
+        self.changeFontSize(False)
+
+    def changeFontSize(self, _isUp: bool) -> None:
+        if _isUp:
+            self._customFont.configure(size=self._customFont["size"] + 1)
+        else:
+            self._customFont.configure(size=self._customFont["size"] - 1)
+        self.update()
+        self.save_setting()
+
+    #############################################################
+    ############ GUI configuration
+
+    # save all gui elements into an ini file
+    def save_setting(self, settings_name="settings"):
+        config = configparser.ConfigParser()
+
+        config[settings_name] = {"font_size": str(self._customFont["size"]), "reply": str(self.JoinReplyVar.get())}
+        with open(settings_name + ".ini", "w") as configfile:
+            config.write(configfile)
+
+    # load all gui elements from an ini file
+    def load_setting(self, settings_name="settings"):
+        try:
+            config = configparser.ConfigParser()
+            filename = settings_name + ".ini"
+            if path.exists(filename):
+                config.read(filename)
+
+                self._customFont.configure(size=int(config[settings_name]["font_size"]))
+                self.JoinReplyVar.set(int(config[settings_name]["reply"]))
+                self.update()
+
+        except Exception as e:
+            print("Error on reading settings.ini. Maybe save it first." + str(e))
+            pass
 
     #############################################################
     ############ actual GUI stuff :P
@@ -143,6 +193,7 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         self.create_toggle()
         self.create_list()
         self.create_save()
+        self.create_list_mods()
         self.set_possitions()
 
     def create_labels(self):
@@ -161,44 +212,60 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         self.IgnoreEntry = customtkinter.CTkEntry(self, width=250)
 
     def create_buttons(self):
-        symbol = ""
+        symbol = None
+        self.NightImage = customtkinter.CTkImage(Image.open("./img/moon-solid.png"), size=(15, 15))
+        self.DayImage = customtkinter.CTkImage(Image.open("./img/lightbulb-solid.png"), size=(15, 15))
+
         if customtkinter.get_appearance_mode() == "light":
-            symbol = NIGHT
+            symbol = self.NightImage
         else:
-            symbol = DAY
-        self.DayNightButton = customtkinter.CTkButton(self, width=10, text=symbol, command=self.onDayNight)
+            symbol = self.DayImage
+        self.DayNightButton = customtkinter.CTkButton(self, width=10, text="", image=symbol, command=self.onDayNight)
 
         self.ButtonFrame = customtkinter.CTkFrame(self, fg_color=self.cget("fg_color"))
-        ## self.settingsButton = customtkinter.CTkButton(self.ButtonFrame, width=12, text=txtSettings)
-        self.Clear = customtkinter.CTkButton(self.ButtonFrame, width=75, text=txtClear, command=self.onDelete)
-        self.Stop = customtkinter.CTkButton(self.ButtonFrame, width=75, text=txtStop, command=self.onStop)
+
+        imageStop = customtkinter.CTkImage(Image.open("./img/stop-solid.png"), size=(15, 15))
+        imagePlay = customtkinter.CTkImage(Image.open("./img/play-solid.png"), size=(15, 15))
+        imagePick = customtkinter.CTkImage(Image.open("./img/dice-solid.png"), size=(20, 20))
 
         self.HelloMode = customtkinter.CTkLabel(self.ButtonFrame, text=txtHelloMode)
         self.HelloMode.cget("font").configure(size=14)
-        self.StartHello = customtkinter.CTkButton(self.ButtonFrame, width=75, text=txtStart, command=self.onStartHello)
+        self.StartHello = customtkinter.CTkButton(
+            self.ButtonFrame, width=10, image=imagePlay, text="", command=self.onStartHello
+        )
+        self.StopHello = customtkinter.CTkButton(
+            self.ButtonFrame, width=10, image=imageStop, text="", command=self.onStop
+        )
 
         self.JoinMode = customtkinter.CTkLabel(self.ButtonFrame, text=txtJoinMode, padx=35)
         self.JoinMode.cget("font").configure(size=14)
         self.JoinReplyVar = customtkinter.IntVar()
-        self.JoinReply = customtkinter.CTkCheckBox(
-            self.ButtonFrame, width=75, text="Reply", variable=self.JoinReplyVar
+        self.JoinReply = customtkinter.CTkSwitch(
+            self.ButtonFrame, width=75, text="Reply", variable=self.JoinReplyVar, command=self.save_setting
         )
-        self.StartJoin = customtkinter.CTkButton(self.ButtonFrame, width=75, text=txtStart, command=self.onStartJoin)
-        self.JoinPick = customtkinter.CTkButton(self.ButtonFrame, width=75, text=txtJoinPick, command=self.onJoinPick)
+        self.StartJoin = customtkinter.CTkButton(
+            self.ButtonFrame, width=10, image=imagePlay, text="", command=self.onStartJoin
+        )
+        self.StopJoin = customtkinter.CTkButton(
+            self.ButtonFrame, width=10, image=imageStop, text="", command=self.onStop
+        )
+        self.JoinPick = customtkinter.CTkButton(
+            self.ButtonFrame, width=75, text=txtJoinPick, image=imagePick, command=self.onJoinPick
+        )
 
         # Location within the frame
-        self.Clear.grid(column=1, row=2, sticky="s")
-        self.Stop.grid(column=1, row=3, sticky="s")
 
-        self.HelloMode.grid(column=1, row=6, sticky="s")
-        self.StartHello.grid(column=1, row=7, sticky="s")
+        self.HelloMode.grid(column=1, row=6, columnspan=2, sticky="s")
+        self.StartHello.grid(column=1, row=7, padx=5, sticky="e")
+        self.StopHello.grid(column=2, row=7, padx=5, sticky="w")
         self.ButtonFrame.grid_rowconfigure(6, minsize=50)
 
-        self.JoinMode.grid(column=1, row=9, sticky="s")
-        self.JoinReply.grid(column=1, row=10, sticky="s")
-        self.StartJoin.grid(column=1, row=11, sticky="s")
-        self.JoinPick.grid(column=1, row=12, sticky="s")
-        self.ButtonFrame.grid_rowconfigure(9, minsize=50)
+        self.JoinMode.grid(column=1, row=9, columnspan=2, sticky="s")
+        self.JoinReply.grid(column=1, row=10, columnspan=2, sticky="s")
+        self.StartJoin.grid(column=1, row=11, padx=5, sticky="e")
+        self.StopJoin.grid(column=2, row=11, padx=5, sticky="w")
+        self.JoinPick.grid(column=1, row=12, columnspan=2, pady=5, sticky="s")
+        self.ButtonFrame.grid_rowconfigure(9, minsize=70)
 
     def create_toggle(self):
         self.toggle_btn = customtkinter.CTkButton(
@@ -207,16 +274,41 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         self.__defaultButtonColor = self.toggle_btn.cget("fg_color")
 
     def create_list(self):
-        self.ListChatters = ListBox_Custom.ListBox_Custom(self)
+        self._customFont = customtkinter.CTkFont(size=13)
+        self.ListChatters = ListBox_Custom.ListBox_Custom(self, self._customFont)
+
+    def create_list_mods(self):
+        self.SizeFrame = customtkinter.CTkFrame(self, fg_color=self.cget("fg_color"))
+
+        imagePlus = customtkinter.CTkImage(Image.open("./img/magnifying-glass-plus-solid.png"), size=(15, 15))
+        imageMinus = customtkinter.CTkImage(Image.open("./img/magnifying-glass-minus-solid.png"), size=(15, 15))
+        imageTrash = customtkinter.CTkImage(Image.open("./img/trash-can-solid.png"), size=(15, 15))
+
+        self.PlusButton = customtkinter.CTkButton(
+            self.SizeFrame, width=10, image=imagePlus, text="", command=self.onPlus
+        )
+        self.MinusButton = customtkinter.CTkButton(
+            self.SizeFrame, width=10, image=imageMinus, text="", command=self.onMinus
+        )
+        self.Clear = customtkinter.CTkButton(
+            self.SizeFrame, width=10, image=imageTrash, text="", command=self.onDelete
+        )
+
+        self.SizeFrame.columnconfigure(2, weight=1)
+        self.Clear.grid(column=1, row=1, sticky="w")
+        self.MinusButton.grid(column=3, row=1, sticky="e")
+        self.PlusButton.grid(column=4, row=1, sticky="e")
 
     def create_save(self):
+        imageDots = customtkinter.CTkImage(Image.open("./img/ellipsis-solid.png"), size=(15, 15))
+
         self.SaveFrame = customtkinter.CTkFrame(self, fg_color=self.cget("fg_color"))
         self.SaveLabel = customtkinter.CTkLabel(self.SaveFrame, text=txtSave, padx=15)
         # todo: uhmm... what?
         self.saveFileVar = customtkinter.IntVar()
         self.SaveCheck = customtkinter.CTkCheckBox(self.SaveFrame, variable=self.saveFileVar, text="", width=10)
         self.SaveEntry = customtkinter.CTkEntry(self)
-        self.SaveSearch = customtkinter.CTkButton(self, width=1, text="...", command=self.onSearch)
+        self.SaveSearch = customtkinter.CTkButton(self, width=1, text="", image=imageDots, command=self.onSearch)
         self.SaveLabel.grid(column=1, row=1)
         self.SaveCheck.grid(column=2, row=1, sticky="e")
 
@@ -229,8 +321,8 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         self.toggle_btn.grid(column=1, row=6, pady=20)
 
         self.ButtonFrame.grid(column=1, row=7, sticky="n")
-        self.IgnoreLabel.grid(column=1, row=8)
-        self.SaveFrame.grid(column=1, row=9)
+        self.IgnoreLabel.grid(column=1, row=9)
+        self.SaveFrame.grid(column=1, row=10)
 
         # Column 2
         self.columnconfigure(2, weight=1)
@@ -249,10 +341,11 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
                 padx=5,
                 sticky="w" + "e" + "n" + "s",
             )
-        self.IgnoreEntry.grid(column=2, row=8, sticky="w" + "e", columnspan=2, padx=5, pady=5)
-        self.SaveEntry.grid(column=2, row=9, sticky="w" + "e", pady=5)
+        self.SizeFrame.grid(column=2, row=8, sticky="w" + "e", columnspan=2, padx=5)
+        self.IgnoreEntry.grid(column=2, row=9, sticky="w" + "e", columnspan=2, padx=5, pady=5)
+        self.SaveEntry.grid(column=2, row=10, sticky="w" + "e", pady=5)
 
         # Column 3
         self.columnconfigure(3, weight=0)
         self.DayNightButton.grid(column=3, row=1, padx=5, pady=5, sticky="e")
-        self.SaveSearch.grid(column=3, row=9, padx=5, sticky="e")
+        self.SaveSearch.grid(column=3, row=10, padx=5, sticky="e")

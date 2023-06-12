@@ -6,6 +6,8 @@ Twitch bot to keep track of who is actually talking.
 - Based on the work of https://github.com/BadNidalee/ChatBot
 - Based on pyTwitchAPI https://github.com/Teekeks/pyTwitchAPI
 
+Using free icons from fontawesome.com
+
 # Download
 If you just want to use the bot go to Releases (https://github.com/calucita/WhosTalking/releases) and download the executable that suits you best. 
 
@@ -46,6 +48,7 @@ the code is fugly as heck. I know. shhhhhhh
 - aiohttp
 - requests
 - customtkinter
+- configparser
 
 ## Others
 You will need to create an AppInfo.py file with the Url and Client Ids as registered in your twitch developers page. 
