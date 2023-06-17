@@ -5,6 +5,7 @@ import ListBoxInterface
 import GUICallerInterface
 import ListBox_Custom
 import configparser
+import os
 from customtkinter import filedialog
 from DictLabel import *
 from Tools import Modes
@@ -18,10 +19,18 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         self.title(txtTitle)
         self.geometry("400x550")
         self.iconbitmap(path.join(path.dirname(__file__), "boticon.ico"))
+        self.__ImageList: list[Image.Image] = []
+        self.ImageDictionary: dict[str, customtkinter.CTkImage] = {}
         self.create_widgets()
         self.load_setting()
-        # self.pack(side="left", fill="both", expand=True)
         self.caller = caller
+        self.SettingsWindow = None
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+    def on_closing(self):
+        for image in self.__ImageList:
+            image.close()
+        self.destroy()
 
     def onStartHello(self):
         self.onStop()
@@ -136,23 +145,58 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
     def onDayNight(self) -> None:
         if customtkinter.get_appearance_mode() == "Light":
             customtkinter.set_appearance_mode("dark")
-            self.DayNightButton.configure(image=self.DayImage)
+            self.DayNightButton.configure(image=self.ImageDictionary["lightbulb"])
         else:
             customtkinter.set_appearance_mode("light")
-            self.DayNightButton.configure(image=self.NightImage)
+            self.DayNightButton.configure(image=self.ImageDictionary["moon"])
+        self.update()
+
+    def __change_font_size(self, font: customtkinter.CTkFont, _isUp: bool):
+        if _isUp:
+            font.configure(size=font["size"] + 1)
+        else:
+            font.configure(size=font["size"] - 1)
+
+    def init_setup(self):
+        self._AppSize = customtkinter.CTkFont(size=13)
+        self._AppHighlightedSize = customtkinter.CTkFont(size=14)
+
+    def app_settings_font_plus(self):
+        self.change_app_font_size(True)
+
+    def app_settings_font_minus(self):
+        self.change_app_font_size(False)
+
+    def change_app_font_size(self, _isUp: bool) -> None:
+        self.__change_font_size(self._AppSize, _isUp)
+        self.__change_font_size(self._AppHighlightedSize, _isUp)
+        self.change_list_font_size(_isUp)
+        self.__update_image_sizes()
+
+        self.update()
+        self.save_setting()
+
+    def __update_image_sizes(self):
+        size = self._AppSize["size"]
+        for image in self.ImageDictionary:
+            print(image)
+            if image == "dice":
+                self.ImageDictionary[image].configure(size=(size + 7, size + 7))
+            # elif image == "minus" or image == "plus" or image == "text-height":
+            # continue
+            else:
+                self.ImageDictionary[image].configure(size=(size + 2, size + 2))
+            print(image)
         self.update()
 
     def onPlus(self) -> None:
-        self.changeFontSize(True)
+        self.change_list_font_size(True)
 
     def onMinus(self) -> None:
-        self.changeFontSize(False)
+        self.change_list_font_size(False)
 
-    def changeFontSize(self, _isUp: bool) -> None:
-        if _isUp:
-            self._customFont.configure(size=self._customFont["size"] + 1)
-        else:
-            self._customFont.configure(size=self._customFont["size"] - 1)
+    def change_list_font_size(self, _isUp: bool) -> None:
+        self.__change_font_size(self._customFont, _isUp)
         self.update()
         self.save_setting()
 
@@ -163,7 +207,11 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
     def save_setting(self, settings_name="settings"):
         config = configparser.ConfigParser()
 
-        config[settings_name] = {"font_size": str(self._customFont["size"]), "reply": str(self.JoinReplyVar.get())}
+        config[settings_name] = {
+            "app_size": str(self._AppSize["size"]),
+            "font_size": str(self._customFont["size"]),
+            "reply": str(self.JoinReplyVar.get()),
+        }
         with open(settings_name + ".ini", "w") as configfile:
             config.write(configfile)
 
@@ -174,9 +222,14 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
             filename = settings_name + ".ini"
             if path.exists(filename):
                 config.read(filename)
-
-                self._customFont.configure(size=int(config[settings_name]["font_size"]))
-                self.JoinReplyVar.set(int(config[settings_name]["reply"]))
+                if "app_size" in config[settings_name]:
+                    self._AppSize.configure(size=int(config[settings_name]["app_size"]))
+                    self._AppHighlightedSize.configure(size=int(config[settings_name]["app_size"]) + 1)
+                    self.__update_image_sizes()
+                if "font_size" in config[settings_name]:
+                    self._customFont.configure(size=int(config[settings_name]["font_size"]))
+                if "reply" in config[settings_name]:
+                    self.JoinReplyVar.set(int(config[settings_name]["reply"]))
                 self.update()
 
         except Exception as e:
@@ -187,70 +240,173 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
     ############ actual GUI stuff :P
 
     def create_widgets(self):
-        self.create_labels()
-        self.create_entries()
-        self.create_buttons()
-        self.create_toggle()
-        self.create_list()
-        self.create_save()
-        self.create_list_mods()
+        self.init_setup()
+        self.import_images()
+        self.create_top_row_buttons()
+        self.create_artifacts()
+        self.create_modes_panel()
+        self.create_connection_toggle()
+        self.create_chatterslist()
+        self.create_save_panel()
+        self.create_list_modidiers()
         self.set_possitions()
 
-    def create_labels(self):
-        self.NameLabel = customtkinter.CTkLabel(self, text=txtBot)
-        self.OauthLabel = customtkinter.CTkLabel(self, text=txtAuth)
-        self.ChannelLabel = customtkinter.CTkLabel(self, text=txtChannel)
-        self.ConnectLabel = customtkinter.CTkLabel(self, text=txtNotConnd, text_color=RD, width=200)
-        self.ConnectLabel.cget("font").configure(size=14)
-        self.ListLabel = customtkinter.CTkLabel(self, text=txtListChat)
-        self.IgnoreLabel = customtkinter.CTkLabel(self, text=txtIgnore)
+    def import_images(self):
+        dirname = "./img/"
+        ext = ".png"
+        for file in os.listdir(dirname):
+            if file.endswith(ext) and not file.endswith("-dark.png"):
+                file = file.removesuffix(ext)
+                self.__add_image_to_dict(file)
+            else:
+                continue
+        self.__update_image_sizes()
 
-    def create_entries(self):
-        self.NameEntry = customtkinter.CTkEntry(self, width=250)
-        self.OauthEntry = customtkinter.CTkEntry(self, width=250, show="*")
-        self.ChannelEntry = customtkinter.CTkEntry(self, width=250)
-        self.IgnoreEntry = customtkinter.CTkEntry(self, width=250)
+    def create_artifacts(self):
+        self.ConnectLabel = customtkinter.CTkLabel(
+            self, text=txtNotConnd, text_color=RD, width=200, font=self._AppHighlightedSize
+        )
+        self.ListLabel = customtkinter.CTkLabel(self, text=txtListChat, font=self._AppSize)
+        self.IgnoreLabel = customtkinter.CTkLabel(self, text=txtIgnore, font=self._AppSize)
+        self.IgnoreEntry = customtkinter.CTkEntry(self, width=250, font=self._AppSize)
 
-    def create_buttons(self):
+    def on_settings_window_close(self):
+        if self.SettingsWindow:
+            self.SettingsWindow.destroy()
+            self.SettingsWindow = None
+
+    def create_settings_window(self):
+        if self.SettingsWindow:
+            return
+        self.SettingsWindow = customtkinter.CTkToplevel(self)
+        self.SettingsWindow.title("Settings")
+        self.SettingsWindow.protocol("WM_DELETE_WINDOW", self.on_settings_window_close)
+        self.create_settings_top_row(self.SettingsWindow)
+        self.create_settings_labels(self.SettingsWindow)
+        self.create_entries(self.SettingsWindow)
+        self.format_settings_window(self.SettingsWindow)
+
+    def __add_image_to_dict(self, name, size=(15, 15)):
+        imgDark = Image.open(path.join(path.dirname(__file__), "./img/" + name + ".png"))
+        self.__ImageList.append(imgDark)
+        pathLight = path.join(path.dirname(__file__), "./img/" + name + "-dark.png")
+        if path.exists(pathLight):
+            imgLight = Image.open(pathLight)
+            self.__ImageList.append(imgLight)
+            self.ImageDictionary[name] = customtkinter.CTkImage(imgLight, imgDark, size=size)
+        else:
+            self.ImageDictionary[name] = customtkinter.CTkImage(imgDark, size=size)
+
+    def create_settings_top_row(self, window):
+        self.SettingsTopRow = customtkinter.CTkFrame(window, fg_color=self.cget("fg_color"))
+
+        self.FontLabel = customtkinter.CTkLabel(
+            self.SettingsTopRow,
+            width=105,
+            text="App text",
+            image=self.ImageDictionary["text-height"],
+            compound="left",
+            padx=5,
+            font=self._AppSize,
+        )
+
+        self.PlusSettingsButton = customtkinter.CTkButton(
+            self.SettingsTopRow,
+            width=10,
+            text="",
+            image=self.ImageDictionary["plus"],
+            command=self.app_settings_font_plus,
+        )
+
+        self.MinusSettingsButton = customtkinter.CTkButton(
+            self.SettingsTopRow,
+            width=10,
+            text="",
+            image=self.ImageDictionary["minus"],
+            command=self.app_settings_font_minus,
+        )
+
+        self.FontLabel.grid(column=1, row=1, sticky="w", pady=15)
+        self.PlusSettingsButton.grid(column=2, row=1)
+        self.MinusSettingsButton.grid(column=3, row=1)
+        self.load_setting()
+
+    def create_settings_labels(self, window):
+        self.NameLabel = customtkinter.CTkLabel(window, text=txtBot, font=self._AppSize)
+        self.OauthLabel = customtkinter.CTkLabel(window, text=txtAuth, font=self._AppSize)
+        self.ChannelLabel = customtkinter.CTkLabel(window, text=txtChannel, font=self._AppSize)
+
+    def create_entries(self, window):
+        self.NameEntry = customtkinter.CTkEntry(window, width=250, font=self._AppSize)
+        self.OauthEntry = customtkinter.CTkEntry(window, width=250, show="*", font=self._AppSize)
+        self.ChannelEntry = customtkinter.CTkEntry(window, width=250, font=self._AppSize)
+
+    def format_settings_window(self, window):
+        window.columnconfigure(1, weight=0)
+        self.SettingsTopRow.grid(column=1, columnspan=2, sticky="e")
+        self.NameLabel.grid(column=1, row=2, sticky="w", padx=10, pady=5)
+        self.OauthLabel.grid(column=1, row=3, sticky="w", padx=10, pady=5)
+        self.ChannelLabel.grid(column=1, row=4, sticky="w", padx=10, pady=5)
+
+        window.columnconfigure(2, weight=1)
+        self.NameEntry.grid(column=2, row=2, sticky="w", columnspan=2, padx=5, pady=5)
+        self.OauthEntry.grid(column=2, row=3, sticky="w", columnspan=2, padx=5, pady=5)
+        self.ChannelEntry.grid(column=2, row=4, sticky="w", columnspan=2, padx=5, pady=5)
+
+        window.after(1, lambda: window.focus_force())
+
+    def create_top_row_buttons(self):
+        self.SettingsButton = customtkinter.CTkButton(
+            self, width=10, text="", image=self.ImageDictionary["gear"], command=self.create_settings_window
+        )
+
         symbol = None
-        self.NightImage = customtkinter.CTkImage(Image.open("./img/moon-solid.png"), size=(15, 15))
-        self.DayImage = customtkinter.CTkImage(Image.open("./img/lightbulb-solid.png"), size=(15, 15))
 
         if customtkinter.get_appearance_mode() == "light":
-            symbol = self.NightImage
+            symbol = self.image = self.ImageDictionary["moon"]
         else:
-            symbol = self.DayImage
+            symbol = self.ImageDictionary["lightbulb"]
         self.DayNightButton = customtkinter.CTkButton(self, width=10, text="", image=symbol, command=self.onDayNight)
 
+    def create_modes_panel(self):
         self.ButtonFrame = customtkinter.CTkFrame(self, fg_color=self.cget("fg_color"))
 
-        imageStop = customtkinter.CTkImage(Image.open("./img/stop-solid.png"), size=(15, 15))
-        imagePlay = customtkinter.CTkImage(Image.open("./img/play-solid.png"), size=(15, 15))
-        imagePick = customtkinter.CTkImage(Image.open("./img/dice-solid.png"), size=(20, 20))
-
-        self.HelloMode = customtkinter.CTkLabel(self.ButtonFrame, text=txtHelloMode)
-        self.HelloMode.cget("font").configure(size=14)
+        self.HelloMode = customtkinter.CTkLabel(self.ButtonFrame, text=txtHelloMode, font=self._AppHighlightedSize)
         self.StartHello = customtkinter.CTkButton(
-            self.ButtonFrame, width=10, image=imagePlay, text="", command=self.onStartHello
+            self.ButtonFrame, width=10, image=self.ImageDictionary["play"], text="", command=self.onStartHello
         )
         self.StopHello = customtkinter.CTkButton(
-            self.ButtonFrame, width=10, image=imageStop, text="", command=self.onStop
+            self.ButtonFrame, width=10, image=self.ImageDictionary["stop"], text="", command=self.onStop
         )
 
-        self.JoinMode = customtkinter.CTkLabel(self.ButtonFrame, text=txtJoinMode, padx=35)
-        self.JoinMode.cget("font").configure(size=14)
+        self.JoinMode = customtkinter.CTkLabel(
+            self.ButtonFrame, text=txtJoinMode, padx=35, font=self._AppHighlightedSize
+        )
         self.JoinReplyVar = customtkinter.IntVar()
         self.JoinReply = customtkinter.CTkSwitch(
-            self.ButtonFrame, width=75, text="Reply", variable=self.JoinReplyVar, command=self.save_setting
+            self.ButtonFrame,
+            width=75,
+            text="Reply",
+            variable=self.JoinReplyVar,
+            command=self.save_setting,
+            font=self._AppSize,
         )
         self.StartJoin = customtkinter.CTkButton(
-            self.ButtonFrame, width=10, image=imagePlay, text="", command=self.onStartJoin
+            self.ButtonFrame, width=10, image=self.ImageDictionary["play"], text="", command=self.onStartJoin
         )
         self.StopJoin = customtkinter.CTkButton(
-            self.ButtonFrame, width=10, image=imageStop, text="", command=self.onStop
+            self.ButtonFrame, width=10, image=self.ImageDictionary["stop"], text="", command=self.onStop
         )
+
+        self.ImageDictionary["dice"].configure(size=(20, 20))
+
         self.JoinPick = customtkinter.CTkButton(
-            self.ButtonFrame, width=75, text=txtJoinPick, image=imagePick, command=self.onJoinPick
+            self.ButtonFrame,
+            width=75,
+            text=txtJoinPick,
+            image=self.ImageDictionary["dice"],
+            command=self.onJoinPick,
+            font=self._AppSize,
         )
 
         # Location within the frame
@@ -267,31 +423,35 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         self.JoinPick.grid(column=1, row=12, columnspan=2, pady=5, sticky="s")
         self.ButtonFrame.grid_rowconfigure(9, minsize=70)
 
-    def create_toggle(self):
+    def create_connection_toggle(self):
         self.toggle_btn = customtkinter.CTkButton(
-            self, text=txtConnect, width=75, state=ON, command=self.onToggleConnection
+            self, text=txtConnect, width=75, state=ON, command=self.onToggleConnection, font=self._AppSize
         )
         self.__defaultButtonColor = self.toggle_btn.cget("fg_color")
 
-    def create_list(self):
+    def create_chatterslist(self):
         self._customFont = customtkinter.CTkFont(size=13)
         self.ListChatters = ListBox_Custom.ListBox_Custom(self, self._customFont)
 
-    def create_list_mods(self):
+    def create_list_modidiers(self):
         self.SizeFrame = customtkinter.CTkFrame(self, fg_color=self.cget("fg_color"))
 
-        imagePlus = customtkinter.CTkImage(Image.open("./img/magnifying-glass-plus-solid.png"), size=(15, 15))
-        imageMinus = customtkinter.CTkImage(Image.open("./img/magnifying-glass-minus-solid.png"), size=(15, 15))
-        imageTrash = customtkinter.CTkImage(Image.open("./img/trash-can-solid.png"), size=(15, 15))
-
         self.PlusButton = customtkinter.CTkButton(
-            self.SizeFrame, width=10, image=imagePlus, text="", command=self.onPlus
+            self.SizeFrame,
+            width=10,
+            image=self.ImageDictionary["magnifying-glass-plus"],
+            text="",
+            command=self.onPlus,
         )
         self.MinusButton = customtkinter.CTkButton(
-            self.SizeFrame, width=10, image=imageMinus, text="", command=self.onMinus
+            self.SizeFrame,
+            width=10,
+            image=self.ImageDictionary["magnifying-glass-minus"],
+            text="",
+            command=self.onMinus,
         )
         self.Clear = customtkinter.CTkButton(
-            self.SizeFrame, width=10, image=imageTrash, text="", command=self.onDelete
+            self.SizeFrame, width=10, image=self.ImageDictionary["trash-can"], text="", command=self.onDelete
         )
 
         self.SizeFrame.columnconfigure(2, weight=1)
@@ -299,25 +459,25 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         self.MinusButton.grid(column=3, row=1, sticky="e")
         self.PlusButton.grid(column=4, row=1, sticky="e")
 
-    def create_save(self):
-        imageDots = customtkinter.CTkImage(Image.open("./img/ellipsis-solid.png"), size=(15, 15))
-
+    def create_save_panel(self):
         self.SaveFrame = customtkinter.CTkFrame(self, fg_color=self.cget("fg_color"))
-        self.SaveLabel = customtkinter.CTkLabel(self.SaveFrame, text=txtSave, padx=15)
+        self.SaveLabel = customtkinter.CTkLabel(self.SaveFrame, text=txtSave, padx=15, font=self._AppSize)
         # todo: uhmm... what?
         self.saveFileVar = customtkinter.IntVar()
-        self.SaveCheck = customtkinter.CTkCheckBox(self.SaveFrame, variable=self.saveFileVar, text="", width=10)
-        self.SaveEntry = customtkinter.CTkEntry(self)
-        self.SaveSearch = customtkinter.CTkButton(self, width=1, text="", image=imageDots, command=self.onSearch)
+        self.SaveCheck = customtkinter.CTkCheckBox(
+            self.SaveFrame, variable=self.saveFileVar, text="", width=10, font=self._AppSize
+        )
+        self.SaveEntry = customtkinter.CTkEntry(self, font=self._AppSize)
+        self.SaveSearch = customtkinter.CTkButton(
+            self, width=1, text="", image=self.ImageDictionary["ellipsis"], command=self.onSearch
+        )
         self.SaveLabel.grid(column=1, row=1)
         self.SaveCheck.grid(column=2, row=1, sticky="e")
 
     def set_possitions(self):
         # Column 1
         self.columnconfigure(1, weight=0)
-        self.NameLabel.grid(column=1, row=2, sticky="w", padx=10)
-        self.OauthLabel.grid(column=1, row=3, sticky="w", padx=10)
-        self.ChannelLabel.grid(column=1, row=4, sticky="w", padx=10)
+        self.SettingsButton.grid(column=1, row=1, padx=5, pady=5, sticky="w")
         self.toggle_btn.grid(column=1, row=6, pady=20)
 
         self.ButtonFrame.grid(column=1, row=7, sticky="n")
@@ -326,9 +486,6 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
 
         # Column 2
         self.columnconfigure(2, weight=1)
-        self.NameEntry.grid(column=2, row=2, sticky="w", columnspan=2, padx=5)
-        self.OauthEntry.grid(column=2, row=3, sticky="w", columnspan=2, padx=5)
-        self.ChannelEntry.grid(column=2, row=4, sticky="w", columnspan=2, padx=5)
         self.ConnectLabel.grid(column=2, row=6, sticky="w", pady=20)
         self.ListLabel.grid(column=2, row=7)
 

@@ -3,9 +3,8 @@
 block_cipher = None
 
 a = Analysis(['Run.py'],
-             pathex=['F:\\Calu\\GitHub\\WhosTalking\\img'],
              binaries=[],
-             datas=[('./Success.html', '.'), ('./Failed.html', '.'), ('./boticon.ico', '.'),('../../../AppData/Local/Packages/PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0/LocalCache/local-packages/Python39/site-packages/customtkinter','customtkinter')],
+             datas=[('./Success.html', '.'), ('./Failed.html', '.'), ('./boticon.ico', '.'),('../../../AppData/Local/Packages/PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0/LocalCache/local-packages/Python39/site-packages/customtkinter','customtkinter'), ('./img/moon-solid.png', '/img/.'), ('./img/lightbulb-solid.png', '/img/.'), ('./img/stop-solid.png', '/img/.'), ('./img/play-solid.png', '/img/.'), ('./img/dice-solid.png', '/img/.'), ('./img/magnifying-glass-plus-solid.png', '/img/.'), ('./img/magnifying-glass-minus-solid.png', '/img/.'), ('./img/trash-can-solid.png', '/img/.'), ('./img/ellipsis-solid.png', '/img/.')],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],

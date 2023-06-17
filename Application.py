@@ -14,7 +14,7 @@ class Application(ObserverPattern.ObserverPattern, GUICallerInterface.GUICallerI
 
     def __init__(self):
         self.__gui = GUI.GUI(self)
-        Settings.loadCredentials(self.__gui)
+        # Settings.loadCredentials(self.__gui)
         self.__ConnectionManager = ConnectionManager.ConnectionManager(self)
         self.__activityController = ActivityController.ActivityController(self.__gui)
 
