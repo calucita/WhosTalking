@@ -3,6 +3,9 @@
 - Fix credentials fetch and save - done ish
 - Fix reauth on empty - done 
 
+PENDING:
+Check save file functionality
+
 
 
 #####Dev log 30/05/2023:

@@ -1,10 +1,8 @@
-import typing
-import os
 import customtkinter
 import configparser
 from os import path
-from Tools import Modes
 from PIL import Image
+from typing import Tuple
 
 
 class GUI_SettingsBase:
@@ -56,7 +54,7 @@ class GUI_SettingsBase:
                 continue
         self.__update_image_sizes()
 
-    def __add_image_to_dict(self, prefix: str, name: str, file: str, size=(15, 15)):
+    def __add_image_to_dict(self, prefix: str, name: str, file: str, size: Tuple[int, int] = (15, 15)):
         imgDark = Image.open(path.join(path.dirname(__file__), "./img/" + file + ".png"))
         if prefix not in self._ImageList:
             self._ImageList[prefix] = []

@@ -209,8 +209,6 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
             self.ButtonFrame, width=10, image=self.settings.ImageDictionary["stop"], text="", command=self.onStop
         )
 
-        self.settings.ImageDictionary["dice"].configure(size=(20, 20))
-
         self.JoinPick = customtkinter.CTkButton(
             self.ButtonFrame,
             width=75,
@@ -300,11 +298,11 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
 
         # Column 2
         self.columnconfigure(2, weight=0)
-        self.toggle_btn.grid(column=2, row=6, pady=20)
+        self.toggle_btn.grid(column=2, row=6, pady=15)
 
         # Column 3
         self.columnconfigure(3, weight=1)
-        self.ConnectLabel.grid(column=3, row=6, sticky="we", pady=20)
+        self.ConnectLabel.grid(column=3, row=6, sticky="we", pady=15)
         self.ListLabel.grid(column=3, row=7)
 
         self.rowconfigure(7, weight=1)
