@@ -1,0 +1,1 @@
+pyinstaller Run.spec --upx-dir C:\Users\claum\Downloads\upx-4.0.2-win64\upx-4.0.2-win64

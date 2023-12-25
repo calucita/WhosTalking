@@ -4,7 +4,6 @@ import AppInfo
 import urllib.parse
 import uuid
 from typing import Union
-from json import JSONDecodeError
 from aiohttp.web import Request
 import webbrowser
 from aiohttp import web
@@ -12,8 +11,6 @@ import asyncio
 from threading import Thread
 from time import sleep
 from os import path
-import requests
-from concurrent.futures._base import CancelledError
 from logging import getLogger, Logger
 
 

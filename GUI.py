@@ -1,5 +1,4 @@
 from os import path
-import TwitchOauth
 import customtkinter
 import ListBoxInterface
 import GUICallerInterface
@@ -68,7 +67,12 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         else:
             self.toggle_btn.configure(state=OFF, fg_color="gray", text=txtConnecting)
             self.update()
-            self.caller.setConnection(True)
+            if not self.settings.NameVar.get() or not self.settings.ChannelVar.get():
+                self.toggle_btn.configure(state=ON, fg_color=self.__defaultButtonColor, text=txtConnect)
+                self.ConnectLabel.configure(text=txtErrorNoData, text_color=RD)
+                self.create_settings_window()
+            else:
+                self.caller.setConnection(True)
         self.onStop()
 
     def onSearch(self):
@@ -84,29 +88,6 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         if newLoc:
             self.SaveEntry.delete(0, END)
             self.SaveEntry.insert(0, newLoc)
-
-    def getOauthStr(self):
-        # print(self.OauthEntry.get())
-        """if self.OauthEntry.get() == "":
-        oauth = TwitchOauth.TwitchOauth()
-        val = oauth.authenticate()
-        if not val or val == "  ":
-            self.setConnectButton(False, 0, False)
-            return "" """
-        # self.OauthEntry.insert(0, "oauth:" + val)
-        return ""  # self.OauthEntry.get()
-
-    def getNameStr(self):
-        return ""  # self.NameEntry.get()
-
-    def getChnlStr(self) -> str:
-        return ""  # self.ChannelEntry.get()
-
-    def getIngoreStr(self) -> str:
-        return self.IgnoreEntry.get()
-
-    def getSaveStr(self) -> str:
-        return self.SaveEntry.get()
 
     def setConnectButton(self, boolean=False, connected=0, fromConnection=False):
         if boolean:
@@ -174,7 +155,11 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
 
     def create_artifacts(self):
         self.ConnectLabel = customtkinter.CTkLabel(
-            self, text=txtNotConnd, text_color=RD, width=200, font=self.settings._AppHighlightedSize
+            self,
+            text=txtNotConnd,
+            text_color=RD,
+            width=200,
+            font=self.settings._AppHighlightedSize,
         )
         self.ListLabel = customtkinter.CTkLabel(self, text=txtListChat, font=self.settings._AppSize)
         self.IgnoreLabel = customtkinter.CTkLabel(self, text=txtIgnore, font=self.settings._AppSize)
@@ -182,23 +167,25 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
 
     def create_top_row_buttons(self):
         self.SettingsButton = customtkinter.CTkButton(
-            self, width=10, text="", image=self.settings.ImageDictionary["gear"], command=self.create_settings_window
+            self,
+            width=10,
+            text="",
+            image=self.settings.ImageDictionary["gear"],
+            command=self.create_settings_window,
         )
 
         symbol = None
-
         if customtkinter.get_appearance_mode() == "light":
             symbol = self.image = self.settings.ImageDictionary["moon"]
         else:
             symbol = self.settings.ImageDictionary["lightbulb"]
+
         self.DayNightButton = customtkinter.CTkButton(self, width=10, text="", image=symbol, command=self.onDayNight)
 
     def create_modes_panel(self):
         self.ButtonFrame = customtkinter.CTkFrame(self, fg_color=self.cget("fg_color"))
 
-        self.HelloMode = customtkinter.CTkLabel(
-            self.ButtonFrame, text=txtHelloMode, font=self.settings._AppHighlightedSize
-        )
+        self.HelloMode = customtkinter.CTkLabel(self.ButtonFrame, text=txtHelloMode, font=self.settings._AppHighlightedSize)
         self.StartHello = customtkinter.CTkButton(
             self.ButtonFrame, width=10, image=self.settings.ImageDictionary["play"], text="", command=self.onStartHello
         )
@@ -206,9 +193,7 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
             self.ButtonFrame, width=10, image=self.settings.ImageDictionary["stop"], text="", command=self.onStop
         )
 
-        self.JoinMode = customtkinter.CTkLabel(
-            self.ButtonFrame, text=txtJoinMode, padx=35, font=self.settings._AppHighlightedSize
-        )
+        self.JoinMode = customtkinter.CTkLabel(self.ButtonFrame, text=txtJoinMode, padx=35, font=self.settings._AppHighlightedSize)
         self.JoinReply = customtkinter.CTkSwitch(
             self.ButtonFrame,
             width=75,
@@ -251,7 +236,12 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
 
     def create_connection_toggle(self):
         self.toggle_btn = customtkinter.CTkButton(
-            self, text=txtConnect, width=75, state=ON, command=self.onToggleConnection, font=self.settings._AppSize
+            self,
+            text=txtConnect,
+            width=75,
+            state=ON,
+            command=self.onToggleConnection,
+            font=self.settings._AppSize,
         )
         self.__defaultButtonColor = self.toggle_btn.cget("fg_color")
 
@@ -287,7 +277,7 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
     def create_save_panel(self):
         self.SaveFrame = customtkinter.CTkFrame(self, fg_color=self.cget("fg_color"))
         self.SaveLabel = customtkinter.CTkLabel(self.SaveFrame, text=txtSave, padx=15, font=self.settings._AppSize)
-        # todo: uhmm... what?
+
         self.saveFileVar = customtkinter.IntVar()
         self.SaveCheck = customtkinter.CTkCheckBox(
             self.SaveFrame, variable=self.saveFileVar, text="", width=10, font=self.settings._AppSize
@@ -302,32 +292,29 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
     def set_possitions(self):
         # Column 1
         self.columnconfigure(1, weight=0)
-        self.SettingsButton.grid(column=1, row=1, padx=5, pady=5, sticky="w")
-        self.toggle_btn.grid(column=1, row=6, pady=20)
+        self.SettingsButton.grid(column=1, row=6, padx=5, pady=5, sticky="w")
 
-        self.ButtonFrame.grid(column=1, row=7, sticky="n")
-        self.IgnoreLabel.grid(column=1, row=9)
-        self.SaveFrame.grid(column=1, row=10)
+        self.ButtonFrame.grid(column=1, row=7, columnspan=2, sticky="n")
+        self.IgnoreLabel.grid(column=1, row=9, columnspan=2)
+        self.SaveFrame.grid(column=1, row=10, columnspan=2)
 
         # Column 2
-        self.columnconfigure(2, weight=1)
-        self.ConnectLabel.grid(column=2, row=6, sticky="w", pady=20)
-        self.ListLabel.grid(column=2, row=7)
+        self.columnconfigure(2, weight=0)
+        self.toggle_btn.grid(column=2, row=6, pady=20)
+
+        # Column 3
+        self.columnconfigure(3, weight=1)
+        self.ConnectLabel.grid(column=3, row=6, sticky="we", pady=20)
+        self.ListLabel.grid(column=3, row=7)
 
         self.rowconfigure(7, weight=1)
         if self.ListChatters:
-            self.ListChatters.grid(
-                column=2,
-                row=7,
-                columnspan=2,
-                padx=5,
-                sticky="w" + "e" + "n" + "s",
-            )
-        self.SizeFrame.grid(column=2, row=8, sticky="w" + "e", columnspan=2, padx=5)
-        self.IgnoreEntry.grid(column=2, row=9, sticky="w" + "e", columnspan=2, padx=5, pady=5)
-        self.SaveEntry.grid(column=2, row=10, sticky="w" + "e", pady=5)
+            self.ListChatters.grid(column=3, row=7, columnspan=2, padx=5, sticky="w" + "e" + "n" + "s")
+        self.SizeFrame.grid(column=3, row=8, sticky="w" + "e", columnspan=2, padx=5)
+        self.IgnoreEntry.grid(column=3, row=9, sticky="w" + "e", columnspan=2, padx=5, pady=5)
+        self.SaveEntry.grid(column=3, row=10, sticky="w" + "e", pady=5)
 
-        # Column 3
-        self.columnconfigure(3, weight=0)
-        self.DayNightButton.grid(column=3, row=1, padx=5, pady=5, sticky="e")
-        self.SaveSearch.grid(column=3, row=10, padx=5, sticky="e")
+        # Column 4
+        self.columnconfigure(4, weight=0)
+        self.DayNightButton.grid(column=4, row=6, padx=5, pady=5, sticky="e")
+        self.SaveSearch.grid(column=4, row=10, padx=5, sticky="e")

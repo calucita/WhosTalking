@@ -15,6 +15,9 @@ class GUI_SettingsBase:
         self._AppHighlightedSize = customtkinter.CTkFont(size=14)
         self._customFont = customtkinter.CTkFont(size=13)
         self.JoinReplyVar = customtkinter.IntVar()
+        self.NameVar = customtkinter.StringVar()
+        self.ChannelVar = customtkinter.StringVar()
+        self.OauthVar = customtkinter.StringVar()
         self.load_setting()
 
     def delete_images(self, prefix: str):
@@ -26,7 +29,25 @@ class GUI_SettingsBase:
     def import_images(self, prefix: str):
         dirname = "./img/"
         ext = ".png"
-        for file in os.listdir(dirname):
+        listofimg = [
+            "main-moon.png",
+            "main-lightbulb.png",
+            "main-stop.png",
+            "main-play.png",
+            "main-dice.png",
+            "main-lupa-plus.png",
+            "main-lupa-minus.png",
+            "main-trash-can.png",
+            "main-ellipsis.png",
+            "main-filter.png",
+            "main-gear.png",
+            "main-reply.png",
+            "set-minus.png",
+            "set-plus.png",
+            "set-text-height.png",
+            "set-text-height-dark.png",
+        ]
+        for file in listofimg:
             if file.startswith(prefix) and file.endswith(ext) and not file.endswith("-dark.png"):
                 file = file.removesuffix(ext)
                 name = file.removeprefix(prefix)

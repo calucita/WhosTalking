@@ -5,6 +5,7 @@ import ConnectionManager
 import ObserverPattern
 import ActivityController
 import GUICallerInterface
+import TwitchOauth
 from Tools import Modes
 from Read import getUser, getMessage
 
@@ -14,7 +15,8 @@ class Application(ObserverPattern.ObserverPattern, GUICallerInterface.GUICallerI
 
     def __init__(self):
         self.__gui = GUI.GUI(self)
-        # Settings.loadCredentials(self.__gui)
+        Settings.loadSavefile(self.__gui)
+        Settings.loadCredentials(self.__gui.settings)
         self.__ConnectionManager = ConnectionManager.ConnectionManager(self)
         self.__activityController = ActivityController.ActivityController(self.__gui)
 
@@ -56,7 +58,7 @@ class Application(ObserverPattern.ObserverPattern, GUICallerInterface.GUICallerI
     def callTidyUpActivities(self):
         if not self.__activityController:
             return
-        reply = self.__activityController.doTidyUp(confirm_entry=(self.__gui.JoinReplyVar.get() == 1))
+        reply = self.__activityController.doTidyUp(confirm_entry=(self.__gui.settings.JoinReplyVar.get() == 1))
 
         if reply:
             self.sendMessage(reply)
@@ -71,7 +73,8 @@ class Application(ObserverPattern.ObserverPattern, GUICallerInterface.GUICallerI
         if not self.__activityController:
             return False
         if boolean is not None:
-            # Disable all activities when there is no connection, the stop is set for the active mode, or None is selected
+            # Disable all activities when there is no connection, the stop is set for the active mode,
+            # or None is selected
             if (
                 not self.isConnectionHealthy()
                 or (not boolean and self.__activityController.isActivityEnabled(mode))
@@ -80,9 +83,7 @@ class Application(ObserverPattern.ObserverPattern, GUICallerInterface.GUICallerI
                 self.__activityController.selectActivity(Modes.NONE)
                 return False
             if boolean:
-                reply = self.__activityController.selectActivity(
-                    mode, confirm_entry=(self.__gui.JoinReplyVar.get() == 1)
-                )
+                reply = self.__activityController.selectActivity(mode, confirm_entry=(self.__gui.settings.JoinReplyVar.get() == 1))
                 if reply:
                     self.sendMessage(reply)
                 if Settings.getSaveFileFromKey() != self.__gui.getSaveStr():
@@ -95,14 +96,25 @@ class Application(ObserverPattern.ObserverPattern, GUICallerInterface.GUICallerI
             self.__activityController.deleteList()
 
     def setConnection(self, _connect: bool) -> None:
+        if not self.__gui.settings.OauthVar.get():
+            oauth = TwitchOauth.TwitchOauth()
+            val = oauth.authenticate()
+            if not val or val == "  ":
+                self.update(False)
+                return
+            self.__gui.settings.OauthVar.set("oauth:" + val)
+
         self.__ConnectionManager.setConnection(
-            _connect, str(self.__gui.getNameStr()), str(self.__gui.getChnlStr()), str(self.__gui.getOauthStr())
+            _connect,
+            str(self.__gui.settings.NameVar.get()),
+            str(self.__gui.settings.ChannelVar.get()),
+            str(self.__gui.settings.OauthVar.get()),
         )
 
     def update(self, status: bool, fromConnection=False, errorCode=0) -> None:
         self.__gui.setConnectButton(status, errorCode, fromConnection)
         if status:
-            Settings.saveCredentials(self.__gui)
+            Settings.saveCredentials(self.__gui.settings)
 
     def after(self, time, method):
         if self.__gui:

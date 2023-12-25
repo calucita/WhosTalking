@@ -19,7 +19,6 @@ class Socket_local:
             self.__send("PASS " + PASS + "\r\n")
             self.__send("NICK " + IDENT + "\r\n")
             self.__send("JOIN #" + CHANNEL + "\r\n")
-        # return __socket
 
     def sendMessage(self, message="PONG :tmi.twitch.tv\r\n", CHANNEL=""):
         if not CHANNEL:
@@ -52,8 +51,7 @@ class Socket_local:
         return data
 
     def __send(self, message):
-        # print(message)
-        if self.__socket:
+        if self.__socket and message:
             self.__socket.send(str.encode(message))
 
     def close(self):
