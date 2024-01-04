@@ -155,24 +155,14 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         self.set_possitions()
 
     def create_artifacts(self):
-        self.ConnectLabel = customtkinter.CTkLabel(
-            self,
-            text=txtNotConnd,
-            text_color=RD,
-            width=200,
-            font=self.settings._AppHighlightedSize,
-        )
+        self.ConnectLabel = customtkinter.CTkLabel(self, text=txtNotConnd, text_color=RD, width=200, font=self.settings._AppHighlightedSize)
         self.ListLabel = customtkinter.CTkLabel(self, text=txtListChat, font=self.settings._AppSize)
         self.IgnoreLabel = customtkinter.CTkLabel(self, text=txtIgnore, font=self.settings._AppSize)
         self.IgnoreEntry = customtkinter.CTkEntry(self, width=250, font=self.settings._AppSize)
 
     def create_top_row_buttons(self):
         self.SettingsButton = customtkinter.CTkButton(
-            self,
-            width=10,
-            text="",
-            image=self.settings.ImageDictionary["gear"],
-            command=self.create_settings_window,
+            self, width=10, text="", image=self.settings.ImageDictionary["gear"], command=self.create_settings_window
         )
 
         symbol = None
@@ -251,18 +241,10 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         self.SizeFrame = customtkinter.CTkFrame(self, fg_color=self.cget("fg_color"))
 
         self.PlusButton = customtkinter.CTkButton(
-            self.SizeFrame,
-            width=10,
-            image=self.settings.ImageDictionary["lupa-plus"],
-            text="",
-            command=self.onPlus,
+            self.SizeFrame, width=10, image=self.settings.ImageDictionary["lupa-plus"], text="", command=self.onPlus
         )
         self.MinusButton = customtkinter.CTkButton(
-            self.SizeFrame,
-            width=10,
-            image=self.settings.ImageDictionary["lupa-minus"],
-            text="",
-            command=self.onMinus,
+            self.SizeFrame, width=10, image=self.settings.ImageDictionary["lupa-minus"], text="", command=self.onMinus
         )
         self.Clear = customtkinter.CTkButton(
             self.SizeFrame, width=10, image=self.settings.ImageDictionary["trash-can"], text="", command=self.onDelete
