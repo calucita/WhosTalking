@@ -15,14 +15,7 @@ class ListBox_Custom(customtkinter.CTkScrollableFrame):
             color = ("gray90", "gray25")
         self._lastColor = not self._lastColor
         label = customtkinter.CTkLabel(
-            self,
-            text=text,
-            compound="left",
-            padx=5,
-            anchor="w",
-            fg_color=color,
-            corner_radius=3,
-            font=self._customfont,
+            self, text=text, compound="left", padx=5, anchor="w", fg_color=color, corner_radius=3, font=self._customfont
         )
 
         label.grid(row=len(self._list), column=0, sticky="w" + "e")
