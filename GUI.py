@@ -27,6 +27,12 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
     def getChnlStr(self) -> str:
         return self.settings.ChannelVar.get()
 
+    def getSaveStr(self) -> str:
+        return self.SaveEntry.get()
+
+    def getIngoreStr(self) -> str:
+        return self.IgnoreEntry.get()
+
     def on_closing(self):
         self.settings.delete_images(self.prefix)
         self.destroy()
