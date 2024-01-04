@@ -70,7 +70,6 @@ class ConnectionManager:
             temp = str.split(readbuffer, "\n")
             readbuffer = temp.pop()
             for line in temp:
-                # print(line)
                 if "Login authentication failed" in line:
                     return 4
 

@@ -2,11 +2,12 @@ import customtkinter
 
 
 class ListBox_Custom(customtkinter.CTkScrollableFrame):
-    def __init__(self, master, **kwargs):
+    def __init__(self, master, font, **kwargs):
         super().__init__(master, **kwargs)
         self.grid_columnconfigure(0, weight=1)
         self._list = []
         self._lastColor = False
+        self._customfont = font
 
     def add_item(self, text: str) -> None:
         color = "transparent"
@@ -14,7 +15,7 @@ class ListBox_Custom(customtkinter.CTkScrollableFrame):
             color = ("gray90", "gray25")
         self._lastColor = not self._lastColor
         label = customtkinter.CTkLabel(
-            self, text=text, compound="left", padx=5, anchor="w", fg_color=color, corner_radius=3
+            self, text=text, compound="left", padx=5, anchor="w", fg_color=color, corner_radius=3, font=self._customfont
         )
 
         label.grid(row=len(self._list), column=0, sticky="w" + "e")

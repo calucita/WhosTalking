@@ -1,3 +1,13 @@
+#####Dev log 25/12/2023
+## To do
+- Fix credentials fetch and save - done ish
+- Fix reauth on empty - done 
+
+PENDING:
+Check save file functionality
+
+
+
 #####Dev log 30/05/2023:
 added confirm entries check box
 cleaned up some of the code.

@@ -6,3 +6,5 @@ AppInfo.py
 *.ico
 *.pyproj
 .vscode/settings.json
+settings.ini
+*.svg
