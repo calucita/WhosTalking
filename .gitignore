@@ -8,3 +8,5 @@ AppInfo.py
 .vscode/settings.json
 settings.ini
 *.svg
+_*
+img/_*
