@@ -24,6 +24,9 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.__defaultIconColor = GR
 
+    def getChnlStr(self) -> str:
+        return self.settings.ChannelVar.get()
+
     def on_closing(self):
         self.settings.delete_images(self.prefix)
         self.destroy()

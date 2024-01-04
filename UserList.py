@@ -51,8 +51,16 @@ class UserList:
         if os.path.isfile(self.__saveFilevar):
             os.remove(self.__saveFilevar)
 
-    def isInList(self, _user: str):
+    def isInList(self, _user: str) -> bool:
         return _user in self.__names
+
+    def getMessage(self, _user: str) -> str:
+        if not self.isInList(_user):
+            return ""
+        listOfChatters = self.__listOfChatters.getChatBox()
+        if listOfChatters:
+            return listOfChatters.get(self.__names.index(_user))
+        return ""
 
     def size(self) -> int:
         return len(self.__names)
