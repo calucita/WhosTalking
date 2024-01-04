@@ -145,10 +145,10 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
 
     def create_widgets(self):
         self.settings.import_images(self.prefix)
+        self.create_connection_toggle()
         self.create_top_row_buttons()
         self.create_artifacts()
         self.create_modes_panel()
-        self.create_connection_toggle()
         self.create_chatterslist()
         self.create_save_panel()
         self.create_list_modidiers()
