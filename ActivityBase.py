@@ -32,11 +32,11 @@ class ActivityBase:
 
     def doCommand(self, user: str, message: str) -> typing.Union[str, bool]:
         if "" in self.__CommandList:
-            split_m = [""]
+            split_m = ""
         else:
-            split_m = str.split(message)
-        if split_m[0] in self.__CommandList:
-            temp = self.__CommandList[split_m[0]](user, message)
+            split_m = str.split(message)[0]
+        if split_m in self.__CommandList:
+            temp = self.__CommandList[split_m](user, message)
             return temp
         return ""
 
