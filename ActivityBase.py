@@ -31,10 +31,13 @@ class ActivityBase:
         return self._enabled
 
     def doCommand(self, user: str, message: str) -> typing.Union[str, bool]:
-        for command in self.__CommandList:
-            if message.lower().startswith(command):
-                return self.__CommandList[command](user, message)
-
+        if "" in self.__CommandList:
+            split_m = ""
+        else:
+            split_m = str.split(message)[0]
+        if split_m in self.__CommandList:
+            temp = self.__CommandList[split_m](user, message)
+            return temp
         return ""
 
     def doTidyUp(self, **kwargs) -> str:
