@@ -35,6 +35,3 @@ BL = "blue"
 GR = "gray"
 ON = "normal"
 OFF = "disabled"
-
-DAY = "💡"
-NIGHT = "🌙"
