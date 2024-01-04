@@ -22,6 +22,7 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         self.settings = GUI_SettingsBase.GUI_SettingsBase()
         self.create_widgets()
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.__defaultIconColor = GR
 
     def on_closing(self):
         self.settings.delete_images(self.prefix)
@@ -30,7 +31,7 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
     def onStartHello(self):
         self.onStop()
         if self.caller.loggingActive(Modes.HELLO, True):
-            self.StartHello.configure(state=OFF, fg_color="gray")
+            self.StartHello.configure(state=OFF, fg_color=self.__defaultIconColor)
             self.StopJoin.configure(state=ON, fg_color=self.__defaultButtonColor)
             self.StopHello.configure(state=ON, fg_color=self.__defaultButtonColor)
             self.update()
@@ -39,14 +40,14 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         self.caller.loggingActive(Modes.NONE, True)
         self.StartHello.configure(state=ON, fg_color=self.__defaultButtonColor)
         self.StartJoin.configure(state=ON, fg_color=self.__defaultButtonColor)
-        self.StopJoin.configure(state=OFF, fg_color="gray")
-        self.StopHello.configure(state=OFF, fg_color="gray")
+        self.StopJoin.configure(state=OFF, fg_color=self.__defaultIconColor)
+        self.StopHello.configure(state=OFF, fg_color=self.__defaultIconColor)
         self.update()
 
     def onStartJoin(self):
         self.onStop()
         if self.caller.loggingActive(Modes.POOL, True):
-            self.StartJoin.configure(state=OFF, fg_color="gray")
+            self.StartJoin.configure(state=OFF, fg_color=self.__defaultIconColor)
             self.StopJoin.configure(state=ON, fg_color=self.__defaultButtonColor)
             self.StopHello.configure(state=ON, fg_color=self.__defaultButtonColor)
             self.update()
@@ -65,7 +66,7 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
             self.toggle_btn.configure(state=ON, fg_color=self.__defaultButtonColor, text=txtConnect)
             self.caller.setConnection(False)
         else:
-            self.toggle_btn.configure(state=OFF, fg_color="gray", text=txtConnecting)
+            self.toggle_btn.configure(state=OFF, fg_color=self.__defaultIconColor, text=txtConnecting)
             self.update()
             if not self.settings.NameVar.get() or not self.settings.ChannelVar.get():
                 self.toggle_btn.configure(state=ON, fg_color=self.__defaultButtonColor, text=txtConnect)

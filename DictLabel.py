@@ -32,6 +32,7 @@ END = "end"
 FG = "fg"
 RD = "red"
 BL = "blue"
+GR = "gray"
 ON = "normal"
 OFF = "disabled"
 
