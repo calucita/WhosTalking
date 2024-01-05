@@ -129,14 +129,22 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
     def isFileSaveActive(self) -> bool:
         return self.saveFileVar.get() == 1
 
-    def onDayNight(self) -> None:
-        if customtkinter.get_appearance_mode() == "Light":
-            customtkinter.set_appearance_mode("dark")
-            self.DayNightButton.configure(image=self.settings.ImageDictionary["lightbulb"])
-        else:
+    def setTheme(self, _mode: str = "") -> None:
+        if _mode != "dark" and _mode != "light":
+            if customtkinter.get_appearance_mode() == "Light":
+                _mode = "dark"
+            else:
+                _mode = "light"
+
+        if _mode == "light":
             customtkinter.set_appearance_mode("light")
             self.DayNightButton.configure(image=self.settings.ImageDictionary["moon"])
+        else:
+            customtkinter.set_appearance_mode("dark")
+            self.DayNightButton.configure(image=self.settings.ImageDictionary["lightbulb"])
+
         self.update()
+        self.settings.save_setting()
 
     def onPlus(self) -> None:
         self.settings.change_list_font_size(True)
@@ -175,12 +183,15 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         )
 
         symbol = None
-        if customtkinter.get_appearance_mode() == "light":
+        if self.settings._themeVar.get() == "light" or self.settings._themeVar.get() == "dark":
+            customtkinter.set_appearance_mode(self.settings._themeVar.get())
+
+        if customtkinter.get_appearance_mode() == "Light":
             symbol = self.image = self.settings.ImageDictionary["moon"]
         else:
             symbol = self.settings.ImageDictionary["lightbulb"]
 
-        self.DayNightButton = customtkinter.CTkButton(self, width=10, text="", image=symbol, command=self.onDayNight)
+        self.DayNightButton = customtkinter.CTkButton(self, width=10, text="", image=symbol, command=self.setTheme)
 
     def create_modes_panel(self):
         self.ButtonFrame = customtkinter.CTkFrame(self, fg_color=self.cget("fg_color"))
