@@ -182,16 +182,10 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
             self, width=10, text="", image=self.settings.ImageDictionary["gear"], command=self.create_settings_window
         )
 
-        symbol = None
-        if self.settings._themeVar.get() == "light" or self.settings._themeVar.get() == "dark":
-            customtkinter.set_appearance_mode(self.settings._themeVar.get())
-
-        if customtkinter.get_appearance_mode() == "Light":
-            symbol = self.image = self.settings.ImageDictionary["moon"]
-        else:
-            symbol = self.settings.ImageDictionary["lightbulb"]
+        symbol = self.settings.ImageDictionary["lightbulb"]
 
         self.DayNightButton = customtkinter.CTkButton(self, width=10, text="", image=symbol, command=self.setTheme)
+        self.setTheme(self.settings._themeVar.get())
 
     def create_modes_panel(self):
         self.ButtonFrame = customtkinter.CTkFrame(self, fg_color=self.cget("fg_color"))
