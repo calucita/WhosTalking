@@ -28,6 +28,10 @@ class GUI_SettingsWindow(customtkinter.CTkToplevel):
         self.settings.app_settings_font_minus()
         self.update()
 
+    def onRestore(self):
+        self.settings.set_font_size()
+        self.update()
+
     def create_settings_top_row(self):
         self.SettingsTopRow = customtkinter.CTkFrame(self, fg_color=self.cget("fg_color"))
 
@@ -49,9 +53,14 @@ class GUI_SettingsWindow(customtkinter.CTkToplevel):
             self.SettingsTopRow, width=10, text="", image=self.settings.ImageDictionary["minus"], command=self.onMinus
         )
 
+        self.ResetSettingsButton = customtkinter.CTkButton(
+            self.SettingsTopRow, width=10, text="", image=self.settings.ImageDictionary["refresh"], command=self.onRestore
+        )
+
         self.FontLabel.grid(column=1, row=1, sticky="w", pady=15)
         self.PlusSettingsButton.grid(column=2, row=1)
         self.MinusSettingsButton.grid(column=3, row=1)
+        self.ResetSettingsButton.grid(column=4, row=1, sticky="w", padx=20)
 
     def create_settings_labels(self):
         self.NameLabel = customtkinter.CTkLabel(self, text=txtBot, font=self.settings._AppSize)
