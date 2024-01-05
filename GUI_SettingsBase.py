@@ -44,6 +44,7 @@ class GUI_SettingsBase:
             "set-plus.png",
             "set-text-height.png",
             "set-text-height-dark.png",
+            "set-refresh.png",
         ]
         for file in listofimg:
             if file.startswith(prefix) and file.endswith(ext) and not file.endswith("-dark.png"):
@@ -85,6 +86,14 @@ class GUI_SettingsBase:
         self.__change_font_size(self._AppSize, _isUp)
         self.__change_font_size(self._AppHighlightedSize, _isUp)
         self.change_list_font_size(_isUp)
+        self.__update_image_sizes()
+
+        self.save_setting()
+
+    def set_font_size(self, size: int = 13) -> None:
+        self._AppSize.configure(size=size)
+        self._AppHighlightedSize.configure(size=size + 1)
+        self._customFont.configure(size=size)
         self.__update_image_sizes()
 
         self.save_setting()
