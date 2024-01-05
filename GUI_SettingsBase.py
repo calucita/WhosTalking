@@ -12,6 +12,7 @@ class GUI_SettingsBase:
         self._AppSize = customtkinter.CTkFont(size=13)
         self._AppHighlightedSize = customtkinter.CTkFont(size=14)
         self._customFont = customtkinter.CTkFont(size=13)
+        self._themeVar = customtkinter.StringVar()
         self.JoinReplyVar = customtkinter.IntVar()
         self.NameVar = customtkinter.StringVar()
         self.ChannelVar = customtkinter.StringVar()
@@ -119,6 +120,7 @@ class GUI_SettingsBase:
             "app_size": str(self._AppSize["size"]),
             "font_size": str(self._customFont["size"]),
             "reply": str(self.JoinReplyVar.get()),
+            "theme": str(customtkinter.get_appearance_mode()).lower(),
         }
         with open(settings_name + ".ini", "w") as configfile:
             config.write(configfile)
@@ -138,6 +140,8 @@ class GUI_SettingsBase:
                     self._customFont.configure(size=int(config[settings_name]["font_size"]))
                 if "reply" in config[settings_name]:
                     self.JoinReplyVar.set(int(config[settings_name]["reply"]))
+                if "theme" in config[settings_name]:
+                    self._themeVar.set(config[settings_name]["theme"])
 
         except Exception as e:
             print("Error on reading settings.ini. Maybe save it first." + str(e))
