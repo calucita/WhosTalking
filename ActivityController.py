@@ -36,12 +36,12 @@ class ActivityController:
             return self.__ActivityList[_activity].isActive()
         return False
 
-    def doAction(self, user: str, message: str) -> typing.Union[str, bool]:
+    def doAction(self, user: str, message: str, **kwargs) -> typing.Union[str, bool]:
         if not self.__anyEnabled:
             return ""
         for act in self.__ActivityList:
             if self.__ActivityList[act].isActive():
-                return self.__ActivityList[act].doCommand(user, message)
+                return self.__ActivityList[act].doCommand(user, message, **kwargs)
         return ""
 
     def doTidyUp(self, **kwargs) -> str:

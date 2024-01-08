@@ -7,6 +7,6 @@ class HelloActivity(ActivityBase.ActivityBase):
         cmds = {"": self.joinQueue}
         super().__init__(_chatBox, cmds)
 
-    def joinQueue(self, user, message) -> str:
+    def joinQueue(self, user, message, **kwargs) -> str:
         self.addToList(user, message)
         return ""

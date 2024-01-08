@@ -43,21 +43,27 @@ class PoolActivity(ActivityBase.ActivityBase):
             return reply
         return ""
 
-    def joinQueue(self, _user: str, _message: str) -> typing.Union[str, bool]:
+    def joinQueue(self, _user: str, _message: str, **kwargs) -> typing.Union[str, bool]:
         regex_message = re.compile(self.__joinCmd, re.IGNORECASE)
         _message = regex_message.sub("", _message)
         if not self._UserList.isInList(_user):
             self.addToList(_user, _message)
             self.__pendingConfirmationsList.append(_user)
+        else:
+            reply = False
+            if "reply" in kwargs:
+                reply = kwargs.pop("reply")
+            if reply:
+                return self.isInQueue(_user)
         return True
 
-    def leaveQueue(self, _user: str, _message: str) -> str:
+    def leaveQueue(self, _user: str, _message: str, **kwargs) -> str:
         if self._UserList.isInList(_user):
             self._UserList.removeUser(_user)
             return "@" + _user + " has left the name pool"
         return ""
 
-    def pickUser(self, _user: str, _message: str) -> str:
+    def pickUser(self, _user: str, _message: str, **kwargs) -> str:
         if self._UserList.isHost(_user):
             if self._UserList.size() == 0:
                 return "No one has joined yet... :( ... "
@@ -73,7 +79,7 @@ class PoolActivity(ActivityBase.ActivityBase):
                 return "Winner! User: " + user
         return ""
 
-    def isInQueue(self, _user: str, _message: str) -> str:
+    def isInQueue(self, _user: str, _message: str = "", **kwargs) -> str:
         message = self._UserList.getMessage(_user)
         if not message:
             return _user + " is not in the name pool."

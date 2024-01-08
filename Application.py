@@ -40,7 +40,7 @@ class Application(ObserverPattern.ObserverPattern, GUICallerInterface.GUICallerI
     def callActivities(self, user, message) -> bool:
         if not self.__activityController:
             return False
-        reply = self.__activityController.doAction(user, message)
+        reply = self.__activityController.doAction(user, message, reply=(self.__gui.settings.JoinReplyVar.get() == 1))
 
         if isinstance(reply, str):
             self.sendMessage(reply)
