@@ -30,13 +30,13 @@ class ActivityBase:
     def isActive(self) -> bool:
         return self._enabled
 
-    def doCommand(self, user: str, message: str) -> typing.Union[str, bool]:
+    def doCommand(self, user: str, message: str, **kwargs) -> typing.Union[str, bool]:
         if "" in self.__CommandList:
             split_m = ""
         else:
             split_m = str.split(message)[0]
         if split_m in self.__CommandList:
-            temp = self.__CommandList[split_m](user, message)
+            temp = self.__CommandList[split_m](user, message, **kwargs)
             return temp
         return ""
 
