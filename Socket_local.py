@@ -1,3 +1,4 @@
+"""twitch specific socket wrapper."""
 import typing
 import socket
 import time
@@ -6,28 +7,50 @@ HOST = "irc.twitch.tv"
 PORT = 6667
 
 
-class Socket_local:
+class SocketLocal:
+    """Socket wrapper for twitch connection."""
+
     __socket: typing.Union[socket.socket, None] = None
 
     def __init__(self, *args, **kwargs):
-        return super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
-    def openSocket(self, PASS, IDENT, CHANNEL):
+    def open_socket(self, pas: str, ident: str, channel: str) -> None:
+        """Opens a socket to twitch.
+
+        Args:
+            pas (str): Token
+            ident (str): botname
+            channel (str): channel to connect to
+        """
         if not self.__socket:
             self.__socket = socket.socket()
             self.__socket.connect((HOST, PORT))
-            self.__send("PASS " + PASS + "\r\n")
-            self.__send("NICK " + IDENT + "\r\n")
-            self.__send("JOIN #" + CHANNEL + "\r\n")
+            self.__send("PASS " + pas + "\r\n")
+            self.__send("NICK " + ident + "\r\n")
+            self.__send("JOIN #" + channel + "\r\n")
 
-    def sendMessage(self, message="PONG :tmi.twitch.tv\r\n", CHANNEL=""):
-        if not CHANNEL:
+    def send_message(self, message: str = "PONG :tmi.twitch.tv\r\n", channel: str = "") -> None:
+        """Use the existing socket to send a message
+
+        Args:
+            message (str, optional): Defaults to "PONG :tmi.twitch.tv\r\n".
+            channel (str, optional): Defaults to "".
+        """
+        if not channel:
             self.__send(message)
             return
-        messageTemp = "PRIVMSG #" + CHANNEL + " :" + message
-        self.__send(messageTemp + "\r\n")
+        self.__send("PRIVMSG #" + channel + " :" + message + "\r\n")
 
-    def recv_timeout(self, timeout=0.250):
+    def recv_timeout(self, timeout: float = 0.250) -> str:
+        """Receive strings with a timeout
+
+        Args:
+            timeout (float, optional): Defaults to 0.250.
+
+        Returns:
+            str: buffer received.
+        """
         data = ""
         # make socket non blocking
         if self.__socket:
@@ -45,7 +68,7 @@ class Socket_local:
             try:
                 if self.__socket:
                     data = self.__socket.recv(1024).decode()
-            except:
+            except UnicodeDecodeError:
                 pass
 
         return data
@@ -54,6 +77,7 @@ class Socket_local:
         if self.__socket and message:
             self.__socket.send(str.encode(message))
 
-    def close(self):
+    def close(self) -> None:
+        """Close the socket - Disconnect"""
         if self.__socket:
             self.__socket.close()

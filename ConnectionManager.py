@@ -5,10 +5,10 @@ import Socket_local
 
 
 class ConnectionManager:
-    __socket: typing.Union[Socket_local.Socket_local, None]
+    __socket: typing.Union[Socket_local.SocketLocal, None]
 
     def __init__(self, observer: ObserverPattern.ObserverPattern) -> None:
-        self.__socket = Socket_local.Socket_local()
+        self.__socket = Socket_local.SocketLocal()
         self.__connected = False
         self.__observer = observer
 
@@ -25,9 +25,9 @@ class ConnectionManager:
         if self.__connected:
             return 0
         if self.__socket is None:
-            self.__socket = Socket_local.Socket_local()
+            self.__socket = Socket_local.SocketLocal()
         if _oauth and _name and _channel:
-            self.__socket.openSocket(str(_oauth), str(_name), str(_channel))
+            self.__socket.open_socket(str(_oauth), str(_name), str(_channel))
             connectionError = self.joinRoom(_name)
             if connectionError:
                 self.__socket = None
@@ -52,15 +52,16 @@ class ConnectionManager:
     def recvBuff(self):
         if self.__socket:
             return self.__socket.recv_timeout()
+        return ""
 
     def sendMessage(self, message=None, channel: str = ""):
         if self.__socket is None:
             # todo: maybe add error here?
             return
         if not message:
-            self.__socket.sendMessage()
+            self.__socket.send_message()
         else:
-            self.__socket.sendMessage(message, channel)
+            self.__socket.send_message(message, channel)
 
     def joinRoom(self, expectedUser) -> int:
         readbuffer = ""

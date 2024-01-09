@@ -38,14 +38,14 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
 
     def onStartHello(self):
         self.onStop()
-        if self.caller.loggingActive(Modes.HELLO, True):
+        if self.caller.logging_active(Modes.HELLO, True):
             self.StartHello.configure(state=OFF, fg_color=self.__defaultIconColor)
             self.StopJoin.configure(state=ON, fg_color=self.__defaultButtonColor)
             self.StopHello.configure(state=ON, fg_color=self.__defaultButtonColor)
             self.update()
 
     def onStop(self):
-        self.caller.loggingActive(Modes.NONE, True)
+        self.caller.logging_active(Modes.NONE, True)
         self.StartHello.configure(state=ON, fg_color=self.__defaultButtonColor)
         self.StartJoin.configure(state=ON, fg_color=self.__defaultButtonColor)
         self.StopJoin.configure(state=OFF, fg_color=self.__defaultIconColor)
@@ -54,25 +54,25 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
 
     def onStartJoin(self):
         self.onStop()
-        if self.caller.loggingActive(Modes.POOL, True):
+        if self.caller.logging_active(Modes.POOL, True):
             self.StartJoin.configure(state=OFF, fg_color=self.__defaultIconColor)
             self.StopJoin.configure(state=ON, fg_color=self.__defaultButtonColor)
             self.StopHello.configure(state=ON, fg_color=self.__defaultButtonColor)
             self.update()
 
     def onJoinPick(self):
-        if self.caller.loggingActive(Modes.POOL):
-            self.caller.pickUser()
+        if self.caller.logging_active(Modes.POOL):
+            self.caller.pick_user()
 
     def onDelete(self):
-        self.caller.deleteList()
+        self.caller.delete_list()
         if self.ListChatters:
             self.ListChatters.deleteAll()
 
     def onToggleConnection(self):
         if self.toggle_btn.cget(TXT) == txtDisconnect:
             self.toggle_btn.configure(state=ON, fg_color=self.__defaultButtonColor, text=txtConnect)
-            self.caller.setConnection(False)
+            self.caller.set_connection(False)
         else:
             self.toggle_btn.configure(state=OFF, fg_color=self.__defaultIconColor, text=txtConnecting)
             self.update()
@@ -81,7 +81,7 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
                 self.ConnectLabel.configure(text=txtErrorNoData, text_color=RD)
                 self.create_settings_window()
             else:
-                self.caller.setConnection(True)
+                self.caller.set_connection(True)
         self.onStop()
 
     def onSearch(self):

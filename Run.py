@@ -2,7 +2,7 @@ import Application
 
 
 def twitchBot():
-    app.chatCheck()
+    app.chat_check()
     app.after(500, twitchBot)
 
 
