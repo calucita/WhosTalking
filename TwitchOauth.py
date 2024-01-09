@@ -1,17 +1,15 @@
 import AppInfo
 
 # Based on the work of Lena "Teekeks" <info@teawork.de>
-import urllib.parse
+
 import uuid
 from typing import Union
-from aiohttp.web import Request
 import webbrowser
 from aiohttp import web
 import asyncio
 from threading import Thread
 from time import sleep
 from os import path
-from logging import getLogger, Logger
 
 
 class TwitchOauth:
@@ -21,7 +19,6 @@ class TwitchOauth:
 
     __server_running: bool = False
     __loop: Union["asyncio.AbstractEventLoop", None] = None
-    __runner: Union["web.AppRunner", None] = None
     __thread: Union["threading.Thread", None] = None
 
     __user_token: Union[str, None] = None
@@ -47,7 +44,6 @@ class TwitchOauth:
 
     def __run(self, runner: "web.AppRunner"):
         try:
-            self.__runner = runner
             self.__loop = asyncio.new_event_loop()
             asyncio.set_event_loop(self.__loop)
             self.__loop.run_until_complete(runner.setup())

@@ -17,7 +17,6 @@ class GUI(customtkinter.CTk, ListBoxInterface.ListBoxInterface):
         self.geometry("400x550")
         self.iconbitmap(path.join(path.dirname(__file__), "boticon.ico"))
         self.caller = caller
-        self.SettingsWindow = None
         self.prefix = "main-"
         self.settings = GUI_SettingsBase.GUI_SettingsBase()
         self.create_widgets()
