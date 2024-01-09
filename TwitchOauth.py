@@ -1,25 +1,28 @@
-import AppInfo
-
+"""Oauth retriever"""
 # Based on the work of Lena "Teekeks" <info@teawork.de>
 
 import uuid
 from typing import Union
 import webbrowser
-from aiohttp import web
 import asyncio
 from threading import Thread
 from time import sleep
 from os import path
+from aiohttp import web
+
+import AppInfo
 
 
 class TwitchOauth:
+    """Twitch oauth retriever based on the work of Lena "Teekeks" <info@teawork.de>"""
+
     port: int = 17563
     host: str = "0.0.0.0"
     __state: str = ""
 
     __server_running: bool = False
     __loop: Union["asyncio.AbstractEventLoop", None] = None
-    __thread: Union["threading.Thread", None] = None
+    __thread: Union[Thread, None] = None
 
     __user_token: Union[str, None] = None
 
@@ -27,8 +30,8 @@ class TwitchOauth:
 
     def __build_runner(self):
         app = web.Application()
-        app.add_routes([web.get("/", self.__handle_callbackGet)])
-        app.add_routes([web.post("/", self.__handle_callbackPost)])
+        app.add_routes([web.get("/", self.__handle_callback_get)])
+        app.add_routes([web.post("/", self.__handle_callback_post)])
         return web.AppRunner(app)
 
     async def __run_check(self):
@@ -37,7 +40,7 @@ class TwitchOauth:
                 await asyncio.sleep(1)
             except:
                 self.__server_running = False
-                pass
+
         for task in asyncio.all_tasks(self.__loop):
             task.cancel()
             self.__server_running = False
@@ -53,7 +56,6 @@ class TwitchOauth:
             self.__loop.run_until_complete(self.__run_check())
         except:
             self.__server_running = False
-            pass
 
     def __start(self):
         self.__thread = Thread(target=self.__run, args=(self.__build_runner(),))
@@ -66,7 +68,7 @@ class TwitchOauth:
         self.__can_close = True
         self.__server_running = False
 
-    async def __handle_callbackGet(self, request: "web.Request"):
+    async def __handle_callback_get(self, request: "web.Request"):
         fn = path.join(path.dirname(__file__), "Failed.html")
         val = str(request.message)
         if not str.__contains__(val, "access_denied"):
@@ -78,7 +80,7 @@ class TwitchOauth:
 
         return web.Response(text=fd, content_type="text/html")
 
-    async def __handle_callbackPost(self, request: "web.Request"):
+    async def __handle_callback_post(self, request: "web.Request"):
         val = str(request.content._buffer)
         fn = path.join(path.dirname(__file__), "Failed.html")
         if not str.__contains__(val, "access_denied"):
@@ -106,6 +108,7 @@ class TwitchOauth:
         return web.Response(text=fd, content_type="text/html")
 
     def authenticate(self):
+        """Starts the process to get a token"""
         self.__start()
         # wait for the server to start up
         while not self.__server_running:
@@ -116,9 +119,9 @@ class TwitchOauth:
             "https://id.twitch.tv/oauth2/authorize?"
             + "response_type=token"
             + "&client_id="
-            + AppInfo.ClientId
+            + AppInfo.CLIENTID
             + "&redirect_uri="
-            + AppInfo.RedirectUri
+            + AppInfo.REDIRECTURI
             + "&scope=chat:read chat:edit"
             + "&force_verify=true"
             + "&state="

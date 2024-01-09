@@ -68,7 +68,7 @@ class SocketLocal:
             try:
                 if self.__socket:
                     data = self.__socket.recv(1024).decode()
-            except UnicodeDecodeError:
+            except:
                 pass
 
         return data

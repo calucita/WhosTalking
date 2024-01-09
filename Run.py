@@ -1,11 +1,13 @@
+""""Main() runner of the bot."""
 import Application
 
 
-def twitchBot():
+def twitch_bot():
+    """What to do in the infinite loop."""
     app.chat_check()
-    app.after(500, twitchBot)
+    app.after(500, twitch_bot)
 
 
 app = Application.Application()
-app.after(250, twitchBot)
+app.after(250, twitch_bot)
 app.mainloop()

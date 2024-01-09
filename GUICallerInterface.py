@@ -1,3 +1,4 @@
+"""Basic interface for GUI callers."""
 import typing
 from Tools import Modes
 
