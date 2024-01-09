@@ -14,7 +14,7 @@ class ConnectionManager:
 
     def connectSocket(self, _name: str = "", _channel: str = "", _oauth: str = "") -> None:
         connectionError = 2
-        for i in range(3):
+        for _ in range(3):
             connectionError = self.__retriableConnect(_name, _channel, _oauth)
             if not connectionError:
                 self.isConnected(connectionError == 0, True, connectionError)
