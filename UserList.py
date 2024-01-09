@@ -47,7 +47,7 @@ class UserList:
         return ""
 
     def deleteList(self):
-        self.__names = []
+        self.__names.clear()
         if os.path.isfile(self.__saveFilevar):
             os.remove(self.__saveFilevar)
 

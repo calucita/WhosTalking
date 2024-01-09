@@ -21,18 +21,9 @@ class ListBox_Custom(customtkinter.CTkScrollableFrame):
         label.grid(row=len(self._list), column=0, sticky="w" + "e")
         self._list.append(label)
 
-    def remove_item(self, text: str) -> None:
-        for label in self._list:
-            if text == label.cget("text"):
-                label.destroy()
-                self._list.remove(label)
-                return
-
     def delete(self, index: int) -> None:
         if index < len(self._list):
-            label = self._list[index]
-            label.destroy()
-            self._list.remove(label)
+            self.__delete_label(self._list.pop(index))
 
     def get(self, index: int) -> str:
         if index >= len(self._list):
@@ -41,5 +32,8 @@ class ListBox_Custom(customtkinter.CTkScrollableFrame):
 
     def deleteAll(self):
         while self._list:
-            label = self._list.pop()
-            label.destroy()
+            self.__delete_label(self._list.pop())
+
+    def __delete_label(self, label) -> None:
+        label.destroy()
+        self.update()
