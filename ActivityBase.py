@@ -8,7 +8,7 @@ class ActivityBase:
     def __init__(self, _chatBox: UserList.UserList, _cmdList: dict = {}):
         self.__CommandList = _cmdList
         if len(self.__CommandList) == 0:
-            raise Exception("No commands added to" + str(type(self)))
+            raise ValueError("No commands added to" + str(type(self)))
         self._enabled = False
         self._UserList = _chatBox
 
