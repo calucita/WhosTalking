@@ -112,8 +112,8 @@ class GUISettings:
 
         self.save_settings()
 
-    def __change_font_size(self, font: customtkinter.CTkFont, _isUp: bool):
-        if _isUp:
+    def __change_font_size(self, font: customtkinter.CTkFont, _isup: bool):
+        if _isup:
             font.configure(size=font["size"] + 1)
         else:
             font.configure(size=font["size"] - 1)

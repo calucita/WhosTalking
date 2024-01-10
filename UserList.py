@@ -55,7 +55,7 @@ class UserList:
                             if recordfile:
                                 recordfile.write(user + "\n")
                                 recordfile.close()
-                        except FileExistsError:  # todo all other possible errors...
+                        except:
                             pass
         return ""
 
