@@ -1,6 +1,20 @@
 # Powershell script to keep the pyinstaller created files and making the release versions
 param([int]$ver=0)
 
+function renameDevRun {
+    param (
+        [string]$path,
+        [string]$mainname,
+        [string]$version,
+        [string]$devversion
+    )
+    if (Test-Path $path)
+    {
+        $bk_run = -join($mainname,".",$version,".", $devversion,".exe")
+        Rename-Item -Path $path -NewName $bk_run
+    }
+}
+
 $dir = Get-Location
 $plainRun = Join-Path $dir "dist\Run.exe"
 
@@ -26,15 +40,15 @@ if ([int]$mainversion -gt [int]$last_Rmav)
 
 if (Test-Path $plainRun)
 {
-    $bk_run = -join($latest.Name.Split(".")[0],".",$last_Rmav,".", $last_Rmiv,".exe")
-
-    Rename-Item -Path $plainRun -NewName $bk_run
+    renameDevRun -path $plainRun -mainname $latest.Name.Split(".")[0] -version $last_Rmav -devversion $last_Rmiv
+    $last_Rmiv = [int]$last_Rmiv + 1
 }
 
 pyinstaller.exe Run.spec --upx-dir "..\..\..\Downloads\upx-4.0.2-win64\upx-4.0.2-win64"
 
 if ($ver -eq 0)
 {
+    renameDevRun -path $plainRun -mainname $latest.Name.Split(".")[0] -version $last_Rmav -devversion $last_Rmiv
     Exit
 }
 
