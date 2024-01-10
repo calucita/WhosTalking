@@ -34,10 +34,13 @@ class CredentialsSettings:
 
     def __load_credentials(self) -> typing.Union[dict, None]:
         legacy = False
+        botto = ""
         if self.__get_password(isold=True):
             legacy = True
+            botto = self.__get_password(isold=legacy)
+        else:
+            botto = keyring.get_password(SERVICE, SERVAR)
 
-        botto = self.__get_password(isold=legacy)
         if not botto:
             return None
         self.namevar.set(botto)
