@@ -81,7 +81,7 @@ class CredentialsSettings:
         return keyring.get_password(SERVICE, self.__savef)
 
     def __process_hash(self, string: str = "") -> str:
-        return hashlib.sha256((SERVAR + string).encode("ascii")).hexdigest()
+        return hashlib.sha3_512((SERVAR + string).encode("ascii")).hexdigest()
 
     def __get_password(self, username: str = "", isold: bool = False) -> typing.Union[str, None]:
         service = SERVICE_O
