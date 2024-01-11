@@ -15,8 +15,8 @@ class ActivityController:
     __activitylist: dict[Tools.Modes, ActivityBase.ActivityBase]
     __anyenabled: bool
 
-    def __init__(self, _chatbox: ListBoxInterface.ListBoxInterface) -> None:
-        self.__userlist = UserList.UserList(_chatbox)
+    def __init__(self, chatbox: ListBoxInterface.ListBoxInterface) -> None:
+        self.__userlist = UserList.UserList(chatbox)
         # Instantiate all our activities
         self.__activitylist = {
             Tools.Modes.HELLO: HelloActivity.HelloActivity(self.__userlist),
@@ -24,11 +24,11 @@ class ActivityController:
         }
         self.__anyenabled = False
 
-    def select_activity(self, _activity: Tools.Modes, **kwargs) -> str:
+    def select_activity(self, activity: Tools.Modes, **kwargs) -> str:
         """Enables the specified activity.
 
         Args:
-            _activity (Tools.Modes)
+            activity (Tools.Modes)
 
         Returns:
             str: reply to chat.
@@ -36,26 +36,26 @@ class ActivityController:
         for _, act in self.__activitylist.items():
             act.disable()
 
-        if _activity in self.__activitylist:
+        if activity in self.__activitylist:
             self.__anyenabled = True
-            return self.__activitylist[_activity].enable(**kwargs)
+            return self.__activitylist[activity].enable(**kwargs)
         else:
             self.__anyenabled = False
         return ""
 
-    def is_activity_enabled(self, _activity: Tools.Modes = Tools.Modes.NONE) -> bool:
+    def is_activity_enabled(self, activity: Tools.Modes = Tools.Modes.NONE) -> bool:
         """Checks if a specific activity is enabled. NONE checks if ANY activity is enabled.
 
         Args:
-            _activity (Tools.Modes, optional): Activity specified. Defaults to Tools.Modes.NONE.
+            activity (Tools.Modes, optional): Activity specified. Defaults to Tools.Modes.NONE.
 
         Returns:
             bool: True if the activity is enabled; otherwise; False.
         """
-        if _activity == Tools.Modes.NONE:
+        if activity == Tools.Modes.NONE:
             return self.__anyenabled
-        if _activity in self.__activitylist:
-            return self.__activitylist[_activity].is_active()
+        if activity in self.__activitylist:
+            return self.__activitylist[activity].is_active()
         return False
 
     def do_action(self, user: str, message: str, **kwargs) -> typing.Union[str, bool]:

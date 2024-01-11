@@ -26,10 +26,10 @@ class GUICallerInterface:
         """Delete the user list."""
         raise NotImplementedError
 
-    def set_connection(self, _connect: bool) -> None:
+    def set_connection(self, connect: bool) -> None:
         """Changes the status of the connection
 
         Args:
-            _connect (bool): True if connected; otherwise False.
+            connect (bool): True if connected; otherwise False.
         """
         raise NotImplementedError

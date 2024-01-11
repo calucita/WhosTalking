@@ -17,31 +17,31 @@ class ConnectionManager:
         self.__connected = False
         self.__observer = observer
 
-    def __connect_socket(self, _name: str = "", _channel: str = "", _oauth: str = "") -> None:
+    def __connect_socket(self, name: str = "", channel: str = "", oauth: str = "") -> None:
         """Connect to twitch. Retries 3 times to avoid transient errors.
 
         Args:
-            _name (str, optional): bot name. Defaults to "".
-            _channel (str, optional): channel to connect to. Defaults to "".
-            _oauth (str, optional): token. Defaults to "".
+            name (str, optional): bot name. Defaults to "".
+            channel (str, optional): channel to connect to. Defaults to "".
+            oauth (str, optional): token. Defaults to "".
         """
         connectionerror = 2
         for _ in range(3):
-            connectionerror = self.__retriable_connect(_name, _channel, _oauth)
+            connectionerror = self.__retriable_connect(name, channel, oauth)
             if not connectionerror:
                 self.is_connected(connectionerror == 0, True, connectionerror)
                 return
         self.is_connected(connectionerror == 0, True, connectionerror)
 
-    def __retriable_connect(self, _name: str = "", _channel: str = "", _oauth: str = "") -> int:
+    def __retriable_connect(self, name: str = "", channel: str = "", oauth: str = "") -> int:
         """Retriable connection call."""
         if self.__connected:
             return 0
         if self.__socket is None:
             self.__socket = SocketLocal.SocketLocal()
-        if _oauth and _name and _channel:
-            self.__socket.open_socket(str(_oauth), str(_name), str(_channel))
-            connectionerror = self.__join_room(_name)
+        if oauth and name and channel:
+            self.__socket.open_socket(str(oauth), str(name), str(channel))
+            connectionerror = self.__join_room(name)
             if connectionerror:
                 self.__socket = None
             return connectionerror

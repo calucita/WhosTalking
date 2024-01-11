@@ -6,12 +6,12 @@ import UserList
 class ActivityBase:
     """Base class for set of commands or 'activities', such as hello, or join pools."""
 
-    def __init__(self, _chatbox: UserList.UserList, _cmdlist: typing.Union[dict, None] = None):
-        if not _cmdlist or len(_cmdlist) == 0:
+    def __init__(self, chatbox: UserList.UserList, cmdlist: typing.Union[dict, None] = None):
+        if not cmdlist or len(cmdlist) == 0:
             raise ValueError("No commands added to" + str(type(self)))
-        self.__commandlist = _cmdlist
+        self.__commandlist = cmdlist
         self._enabled = False
-        self._userlist = _chatbox
+        self._userlist = chatbox
 
     def enable(self, **kwargs) -> str:
         """Enables the activity

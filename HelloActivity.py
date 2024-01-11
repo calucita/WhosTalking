@@ -6,9 +6,9 @@ import UserList
 class HelloActivity(ActivityBase.ActivityBase):
     """Hello Queue activity."""
 
-    def __init__(self, _chatBox: UserList.UserList):
+    def __init__(self, chatBox: UserList.UserList):
         cmds = {"": self.join_queue}
-        super().__init__(_chatBox, cmds)
+        super().__init__(chatBox, cmds)
 
     def join_queue(self, user, message, **_kwargs) -> str:
         """Command wapper to add the user to the user list.

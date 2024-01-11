@@ -141,7 +141,7 @@ class Application(ObserverPattern.ObserverPattern, GUICallerInterface.GUICallerI
         if self.__activitycontroller:
             self.__activitycontroller.delete_list()
 
-    def set_connection(self, _connect: bool) -> None:
+    def set_connection(self, connect: bool) -> None:
         if not self.__credentials.oauthvar.get():
             oauth = TwitchOauth.TwitchOauth()
             val = oauth.authenticate()
@@ -151,7 +151,7 @@ class Application(ObserverPattern.ObserverPattern, GUICallerInterface.GUICallerI
             self.__credentials.oauthvar.set("oauth:" + val)
 
         self.__connectionmanager.set_connection(
-            _connect,
+            connect,
             str(self.__credentials.namevar.get()),
             str(self.__credentials.channelvar.get()),
             str(self.__credentials.oauthvar.get()),
