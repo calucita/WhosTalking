@@ -1,56 +1,93 @@
+"""Activity controller"""
+import typing
 import UserList
 import Tools
+import ActivityBase
 import HelloActivity
 import PoolActivity
 import ListBoxInterface
-import typing
 
 
 class ActivityController:
     """Coordinates the different activites available on the bot"""
 
-    def __init__(self, _chatbox: ListBoxInterface.ListBoxInterface) -> None:
-        self.__UserList = UserList.UserList(_chatbox)
+    __userlist: UserList.UserList
+    __activitylist: dict[Tools.Modes, ActivityBase.ActivityBase]
+    __anyenabled: bool
+
+    def __init__(self, chatbox: ListBoxInterface.ListBoxInterface) -> None:
+        self.__userlist = UserList.UserList(chatbox)
         # Instantiate all our activities
-        self.__ActivityList = {
-            Tools.Modes.HELLO: HelloActivity.HelloActivity(self.__UserList),
-            Tools.Modes.POOL: PoolActivity.PoolActivity(self.__UserList),
+        self.__activitylist = {
+            Tools.Modes.HELLO: HelloActivity.HelloActivity(self.__userlist),
+            Tools.Modes.POOL: PoolActivity.PoolActivity(self.__userlist),
         }
-        self.__anyEnabled = False
+        self.__anyenabled = False
 
-    def selectActivity(self, _activity: Tools.Modes, **kwargs) -> str:
-        for act in self.__ActivityList:
-            self.__ActivityList[act].disable()
+    def select_activity(self, activity: Tools.Modes, **kwargs) -> str:
+        """Enables the specified activity.
 
-        if _activity in self.__ActivityList:
-            self.__anyEnabled = True
-            return self.__ActivityList[_activity].enable(**kwargs)
+        Args:
+            activity (Tools.Modes)
+
+        Returns:
+            str: reply to chat.
+        """
+        for _, act in self.__activitylist.items():
+            act.disable()
+
+        if activity in self.__activitylist:
+            self.__anyenabled = True
+            return self.__activitylist[activity].enable(**kwargs)
         else:
-            self.__anyEnabled = False
+            self.__anyenabled = False
         return ""
 
-    def isActivityEnabled(self, _activity: Tools.Modes = Tools.Modes.NONE) -> bool:
-        if _activity == Tools.Modes.NONE:
-            return self.__anyEnabled
-        if _activity in self.__ActivityList:
-            return self.__ActivityList[_activity].isActive()
+    def is_activity_enabled(self, activity: Tools.Modes = Tools.Modes.NONE) -> bool:
+        """Checks if a specific activity is enabled. NONE checks if ANY activity is enabled.
+
+        Args:
+            activity (Tools.Modes, optional): Activity specified. Defaults to Tools.Modes.NONE.
+
+        Returns:
+            bool: True if the activity is enabled; otherwise; False.
+        """
+        if activity == Tools.Modes.NONE:
+            return self.__anyenabled
+        if activity in self.__activitylist:
+            return self.__activitylist[activity].is_active()
         return False
 
-    def doAction(self, user: str, message: str, **kwargs) -> typing.Union[str, bool]:
-        if not self.__anyEnabled:
+    def do_action(self, user: str, message: str, **kwargs) -> typing.Union[str, bool]:
+        """Calls the matching command for the activity enabled.
+
+        Args:
+            user (str): username
+            message (str): user's message
+
+        Returns:
+            typing.Union[str, bool]: str reply to chat, True if successful; otherwise, False.
+        """
+        if not self.__anyenabled:
             return ""
-        for act in self.__ActivityList:
-            if self.__ActivityList[act].isActive():
-                return self.__ActivityList[act].doCommand(user, message, **kwargs)
+        for _, act in self.__activitylist.items():
+            if act.is_active():
+                return act.do_command(user, message, **kwargs)
         return ""
 
-    def doTidyUp(self, **kwargs) -> str:
-        if not self.__anyEnabled:
+    def do_tidy_up(self, **kwargs) -> str:
+        """Calls the activity enabled to tidy up.
+
+        Returns:
+            str: reply to chat.
+        """
+        if not self.__anyenabled:
             return ""
-        for act in self.__ActivityList:
-            if self.__ActivityList[act].isActive():
-                return self.__ActivityList[act].doTidyUp(**kwargs)
+        for _, act in self.__activitylist.items():
+            if act.is_active():
+                return act.do_tidy_up(**kwargs)
         return ""
 
-    def deleteList(self) -> None:
-        self.__UserList.deleteList()
+    def delete_list(self) -> None:
+        """Clears out the chatters list."""
+        self.__userlist.delete_list()

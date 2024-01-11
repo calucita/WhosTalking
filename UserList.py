@@ -1,85 +1,144 @@
+"""User list backend"""
 import os
 from DictLabel import *
 import ListBoxInterface
 
-spaceString = ":   "
+SPACESTRING = ":   "
 
 
 class UserList:
+    """Handles the logic for the user list."""
+
     __names = []
-    __saveFilevar = ""
+    __savefilevar = ""
 
-    def __init__(self, _guiList: ListBoxInterface.ListBoxInterface) -> None:
-        self.__listOfChatters = _guiList
+    def __init__(self, guilist: ListBoxInterface.ListBoxInterface) -> None:
+        self.__listofchatters = guilist
 
-    def addToList(self, user, message) -> str:
-        if not self.__listOfChatters:
+    def add_to_list(self, user: str, message: str) -> str:
+        """Adds a user and their chat message to the list.
+
+        Args:
+            user (str): username
+            message (str): chat message
+
+        Returns:
+            str: reply to chat.
+        """
+        if not self.__listofchatters:
             return ""
         if user and message:
-            if not (user in self.__names) and not (user in self.__listOfChatters.getIngoreStr()):
-                listOfChatters = self.__listOfChatters.getChatBox()
-                if listOfChatters is None:
+            if not (user in self.__names) and not user in self.__listofchatters.get_ingore_str():
+                chatlist = self.__listofchatters.get_chat_box()
+                if chatlist is None:
                     return ""
-                listOfChatters.add_item(user + spaceString + message)
+                chatlist.add_item(user + SPACESTRING + message)
                 self.__names.append(user)
-                if self.__listOfChatters.isFileSaveActive():
-                    fileVar = self.__listOfChatters.getSaveStr()
-                    if fileVar and (not self.__saveFilevar or self.__saveFilevar != fileVar):
-                        self.__saveFilevar = fileVar
-                    if self.__saveFilevar:
+                if self.__listofchatters.is_file_save_active():
+                    filevar = self.__listofchatters.get_save_str()
+
+                    if filevar and (not self.__savefilevar or self.__savefilevar != filevar):
+                        self.__savefilevar = filevar
+                    if self.__savefilevar:
                         if len(self.__names) == 1:
                             try:
-                                os.remove(self.__saveFilevar)
-                            except:
+                                os.remove(self.__savefilevar)
+                            except FileNotFoundError:
                                 pass
                         try:
-                            recordFile = ""
-                            if os.path.isfile(self.__saveFilevar):
-                                recordFile = open(self.__saveFilevar, "a")
-                            elif self.__saveFilevar:
-                                recordFile = open(self.__saveFilevar, "w")
+                            recordfile = ""
+                            if os.path.isfile(self.__savefilevar):
+                                recordfile = open(self.__savefilevar, "a")
+                            elif self.__savefilevar:
+                                recordfile = open(self.__savefilevar, "w")
 
-                            if recordFile:
-                                recordFile.write(user + "\n")
-                                recordFile.close()
+                            if recordfile:
+                                recordfile.write(user + "\n")
+                                recordfile.close()
                         except:
                             pass
         return ""
 
-    def deleteList(self):
+    def delete_list(self) -> None:
+        """Deletes all the entries in the chat list."""
         self.__names.clear()
-        if os.path.isfile(self.__saveFilevar):
-            os.remove(self.__saveFilevar)
+        if os.path.isfile(self.__savefilevar):
+            os.remove(self.__savefilevar)
 
-    def isInList(self, _user: str) -> bool:
-        return _user in self.__names
+    def is_in_list(self, user: str) -> bool:
+        """Checks if the specified user is in the chat list.
 
-    def getMessage(self, _user: str) -> str:
-        if not self.isInList(_user):
+        Args:
+            user (str): username
+
+        Returns:
+            bool: True if the user is in the list; otherwise, False.
+        """
+        return user in self.__names
+
+    def get_message(self, user: str) -> str:
+        """Retrieves the message submitted by a user in the chat list.
+
+        Args:
+            user (str): username
+
+        Returns:
+            str: message associated to the user. Empty if the user is not in the list.
+        """
+        if not self.is_in_list(user):
             return ""
-        listOfChatters = self.__listOfChatters.getChatBox()
-        if listOfChatters:
-            return listOfChatters.get(self.__names.index(_user))
+        chatlist = self.__listofchatters.get_chat_box()
+        if chatlist:
+            return chatlist.get(self.__names.index(user))
         return ""
 
     def size(self) -> int:
+        """Retrieves the length of the chat list.
+
+        Returns:
+            int:
+        """
         return len(self.__names)
 
-    def removeUser(self, user) -> str:
+    def remove_user(self, user: str) -> str:
+        """removes a pecified user from the list.
+
+        Args:
+            user (str): username
+
+        Returns:
+            str: message associated with the user. Empty str if the user is not in the list.
+        """
         if user in self.__names:
             index = self.__names.index(user)
-            return self.selectEntry(index)
+            return self.select_entry(index)
         return ""
 
-    def selectEntry(self, _num) -> str:
-        listOfChatters = self.__listOfChatters.getChatBox()
+    def select_entry(self, num: int) -> str:
+        """Removes a record from the chat list given an index.
 
-        if _num < self.size() and listOfChatters is not None:
-            message = listOfChatters.get(_num)
-            listOfChatters.delete(_num)
-            del self.__names[_num]
+        Args:
+            num (int): index to remove
+
+        Returns:
+            str: str: message associated with the user. Empty str if out of range.
+        """
+        chatlist = self.__listofchatters.get_chat_box()
+
+        if num < self.size() and chatlist is not None:
+            message = chatlist.get(num)
+            chatlist.delete(num)
+            del self.__names[num]
             return message
         return ""
 
-    def isHost(self, _user) -> bool:
-        return _user.lower() == self.__listOfChatters.getChnlStr().lower()
+    def is_host(self, user: str) -> bool:
+        """Checks if the username provided is the chat's host.
+
+        Args:
+            user (str): username
+
+        Returns:
+            bool: True if the user is the channel owner; otherwise, False.
+        """
+        return user.lower() == self.__listofchatters.get_chnl_str().lower()
